@@ -1,7 +1,18 @@
 #ifndef CONV_H_
 #define CONV_H_ 
+#include <stdbool.h>
+#define HTOD 191386209
+#define HTOB 191386207
+#define HTOA 191386206
+#define BTOH 191170591
+#define BTOD 191170587
+#define BTOA 191170584
+#define DTOH 191242465
+#define DTOB 191242459
+#define DTOA 191242458
+#define VAL  2088222581
+#define FIL  2088205421
 
-#define HTOD "fuck" 
 
 enum conv
 {
@@ -11,15 +22,15 @@ enum conv
 
 enum val_conv 
 {
-    //HTOD,
-    HTOB,
-    HTOA,
-    BTOH,
-    BTOD,
-    BTOA,
-    DTOH,
-    DTOB,
-    DTOA
+    CONV_HTOD,
+    CONV_HTOB,
+    CONV_HTOA,
+    CONV_BTOH,
+    CONV_BTOD,
+    CONV_BTOA,
+    CONV_DTOH,
+    CONV_DTOB,
+    CONV_DTOA
 };
 
 enum f_conv
@@ -35,13 +46,20 @@ struct file_conv
     char *path;
 };
 
-/*typedef struct parse_res
+struct value_conv
 {
+    enum val_conv conv;
+    char *val;
+}
+
+typedef struct parse_res
+{
+    bool file;
     union
     {
-
+        struct file_conv;
+        struct value_conv;
     }
 } 
-*/
 
 #endif
