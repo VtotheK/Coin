@@ -10,14 +10,20 @@
 #define DTOH 191242465
 #define DTOB 191242459
 #define DTOA 191242458
-#define VAL  2088222581
-#define FIL  2088205421
+#define VAL 2088222581
+#define FIL 2088205421
 
 
 enum conv
 {
-    VAL,
-    FIL
+    CONV_VAL,
+    CONV_FIL
+};
+
+enum parse_state
+{
+    FAILURE,
+    SUCCESS
 };
 
 enum val_conv 
@@ -50,16 +56,18 @@ struct value_conv
 {
     enum val_conv conv;
     char *val;
-}
+};
 
-typedef struct parse_res
+struct parse_res
 {
+    char *msg;
+    enum parse_state state;
     bool file;
-    union
+    union 
     {
-        struct file_conv;
-        struct value_conv;
-    }
-} 
+        struct file_conv f_conv;
+        struct value_conv val_conv;
+    };
+};
 
 #endif

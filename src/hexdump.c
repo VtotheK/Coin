@@ -2,6 +2,7 @@
 #include <string.h>
 #include <stdlib.h>
 #include "../include/conv.h"
+#include "../include/parser.h"
 int main(int argc, char *argv[])
 {
     if(argc < 2)
@@ -9,6 +10,6 @@ int main(int argc, char *argv[])
         printf("No command line arguments.");
         exit(EXIT_FAILURE);
     }
-    struct parse_res result = parseargs(++argv,argc-1);
+    struct parse_res result = parse_args(++argv,argc-1);
     return 0;
 }

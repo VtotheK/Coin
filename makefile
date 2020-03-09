@@ -7,10 +7,10 @@ LDIR =../lib
 
 LIBS =-lm
 
-_DEPS = conv.h 
+_DEPS = parser.h conv.h 
 DEPS = $(patsubst %,$(IDIR)/%,$(_DEPS))
 
-_OBJ = hexdump.o 
+_OBJ = parser.o hexdump.o 
 OBJ = $(patsubst %,$(ODIR)/%,$(_OBJ))
 
 
