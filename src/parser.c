@@ -1,22 +1,25 @@
 #include <stdio.h>
 #include <string.h>
+#include <stdlib.h>
 #include <stdbool.h>
 #include "../include/parser.h"
 #include "../include/conv.h"
+
+#define MSG_SIZE 64
 
 unsigned long hash_comp(unsigned char *str);
 
 struct parse_res parse_args(char **msg,int a_count)
 {
     struct parse_res result;
-    char **arg = msg;
     int i;
     bool u_conv = false;
     bool v_conv = false;
-    char str[64];
+    char *str = (char*)malloc(MSG_SIZE * sizeof(char));
+    memset(str,'\0',MSG_SIZE * sizeof(char));
     for(i=0; i<a_count;i++)
     {
-        switch(hash_comp(arg[i]))
+        switch(hash_comp(msg[i]))
         {
             case VAL:
                 if(!u_conv)
@@ -26,25 +29,23 @@ struct parse_res parse_args(char **msg,int a_count)
                 }
                 else
                 {
-                    memset(str,'\0',sizeof(str));
                     str = "Multiple conversion types. Aborting.";
                     result.state = FAILURE;
-                    result.msg = &str[0];
+                    strcpy(result.msg, str);
                     return result;
                 }
                 break;
             case FIL:
                 if(!u_conv)
                 {
-                    parse_res.file = true;
+                    result.file = true;
                     u_conv = true;
                 }
                 else
                 {
-                    memset(str,'\0',sizeof(str));
-                    str = "Multiple conversion types. Aborting."
+                    str = "Multiple conversion types. Aborting.";
                     result.state = FAILURE;
-                    result.msg = &str[0];
+                    strcpy(result.msg,str);
                     return result;
                 }
                 break;
