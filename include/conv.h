@@ -1,18 +1,18 @@
 #ifndef CONV_H_
 #define CONV_H_ 
 #include <stdbool.h>
-#define HTOD 191386209
-#define HTOB 191386207
-#define HTOA 191386206
-#define BTOH 191170591
-#define BTOD 191170587
-#define BTOA 191170584
-#define DTOH 191242465
-#define DTOB 191242459
-#define DTOA 191242458
-#define VAL 2088222581
-#define FIL 2088205421
-
+#define HTOD 210644783713   //-htod
+#define HTOB 210644783711   //-htob
+#define HTOA 210644783710   //-htoa
+#define BTOH 210644568095   //-btoh
+#define BTOD 210644568091   //-btod
+#define BTOA 210644568088   //-btoa
+#define DTOH 210644639969   //-dtoh
+#define DTOB 210644639963   //-dtob
+#define DTOA 210644639962   //-dtoa
+#define VAL 6383189877      //-val
+#define FIL 6383172717      //-fil
+#define HELP 6951207451432  //--help
 
 enum conv
 {
@@ -23,7 +23,8 @@ enum conv
 enum parse_state
 {
     FAILURE,
-    SUCCESS
+    SUCCESS,
+    HELPER
 };
 
 enum val_conv 

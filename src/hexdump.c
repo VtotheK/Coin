@@ -10,8 +10,7 @@ int main(int argc, char *argv[])
         printf("No command line arguments.");
         exit(EXIT_FAILURE);
     }
-    char **ptr = &argv[1];
-    struct parse_res result = parse_args(ptr,argc-1);
+    struct parse_res result = parse_args(++argv,argc-1);
     
     printf("%s",result.msg);
 
