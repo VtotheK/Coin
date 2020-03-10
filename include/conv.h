@@ -56,7 +56,11 @@ struct file_conv
 struct value_conv
 {
     enum val_conv conv;
-    char *val;
+    union
+    {
+        char *val;
+        unsigned long d_val;
+    };
 };
 
 struct parse_res
