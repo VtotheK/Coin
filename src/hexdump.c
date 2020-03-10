@@ -61,7 +61,7 @@ int main(int argc, char *argv[])
                         if(m > 9)
                         {
                             int n = m - 10;
-                            res++ = hex[n];
+                            strcpy(res++,hex[n]);
                         }
                         else
                         {
