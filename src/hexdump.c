@@ -61,20 +61,22 @@ int main(int argc, char *argv[])
                         if(m > 9)
                         {
                             int n = m - 10;
-                            strcpy(res++,hex[n]);
+                            strcpy(res++,&hex[n]);
                         }
                         else
                         {
-                            res++ = m + '0';
+                            *res++ = m + '0';
                         }
+                        i++;
                         int rem = c; 
                         while((rem = rem / 16) > 1)
                         {
+                            int s;
                             int temp = rem % 16;
                             if(temp > 9)
                             {
-                                int s = rem - 10;
-                                res++ = hex[s];  
+                                s = rem - 10;
+                                strcpy(res++,&hex[s]);  
                             }
                         }
                     }
