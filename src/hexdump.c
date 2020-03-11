@@ -4,7 +4,6 @@
 #include "../include/conv.h"
 #include "../include/parser.h"
 #include "../include/w_error.h"
-
 #define VAL_BUFFER 128
 
 void w_error(char *msg)
@@ -56,7 +55,7 @@ int main(int argc, char *argv[])
                         char *res = (char*) malloc(sizeof(char) * VAL_BUFFER);
                         memset(res, '\0', sizeof(char) * VAL_BUFFER);
                         int i = 0;
-                        int c = result.val_conv.conv;
+                        unsigned long c = result.val_conv.d_val;
                         int m = c % 16;
                         if(m > 9)
                         {
@@ -79,6 +78,7 @@ int main(int argc, char *argv[])
                                 strcpy(res++,&hex[s]);  
                             }
                         }
+                        printf("%s",res);
                     }
                     else 
                     {

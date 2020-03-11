@@ -4,7 +4,7 @@
 #include <stdbool.h>
 #include "../include/parser.h"
 #include "../include/conv.h"
-
+#include <limits.h>
 #define MSG_SIZE 64
 
 unsigned long hash_comp(unsigned char *str);
@@ -30,7 +30,6 @@ struct parse_res parse_args(char **msg,const int a_count)
                     if(!u_conv)
                     {
                         result.file= false;
-                        v_conv = true;
                         u_conv = true;
                     }
                     else 
@@ -126,18 +125,18 @@ struct parse_res parse_args(char **msg,const int a_count)
                     return result;
             }
         }
-        else if(strlen(&msg[i][0]) > 2 && msg[i][0] == '-' && msg[i][1] '-')
+        else if(strlen(&msg[i][0]) > 2 && msg[i][0] == '-' && msg[i][1] ==  '-')
         {
             //TODO handle --commands
         }
         else
         {
-            if(u_conv && val_conv)
+            if(u_conv && v_conv)
             {
-                switch(result.val_conv.conv)
+                switch(result.val_conv.conv) //TODO change this enum int comparison to struct ulong 
                 {
-                    case DTOH:
-                        if(strlen(&msg[i] > 19)
+                    case CONV_DTOH:
+                        if(strlen(msg[i]) > 19)
                                 {
                                     result.msg = "Too long conversion target. Max char length 19.";
                                     result.state = FAILURE;
@@ -145,17 +144,17 @@ struct parse_res parse_args(char **msg,const int a_count)
                                     //TODO ulong max size, how to ensure ulong max length as max input?
                                 }
                          else{
-                         
-                        if((result.val_conv.d_val = strtoul(msg[i],strlen(&msg[i][0]),0)) > 0)
+                         char *ptr;
+                        if((result.val_conv.d_val = strtoul(&msg[i][0],&ptr,10)) > 0)
                         {
                             result.state = SUCCESS;
                             return result;
                         }
                         }
                         break;
-                    case DTOB:
+                    case CONV_DTOB:
                         break;
-                    case DTOA:
+                    case CONV_DTOA:
                         break;
 
                 }
