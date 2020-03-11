@@ -14,15 +14,17 @@ struct parse_res parse_args(char **msg,const int a_count)
     struct parse_res result;
     result.state = SUCCESS;
     int i;
-    char **arg;
-    arg = msg;
+    int len;
+    //char **arg;
+    //arg = msg;
     bool u_conv = false;
     bool v_conv = false;
     for(i=0; i<a_count;i++)
     {
-        if(msg[i][0] == '-')
+        len = strlen(&msg[i][0]);
+        if(len > 1 && msg[i][0] == '-' && msg[i][1] != '-')
         {
-            switch(hash_comp(arg[i]))
+            switch(hash_comp(msg[i]))
             {
                 case VAL:
                     if(!u_conv)
@@ -124,9 +126,41 @@ struct parse_res parse_args(char **msg,const int a_count)
                     return result;
             }
         }
+        else if(strlen(&msg[i][0]) > 2 && msg[i][0] == '-' && msg[i][1] '-')
+        {
+            //TODO handle --commands
+        }
         else
         {
-            printf("SOME VALUE DETECTED");
+            if(u_conv && val_conv)
+            {
+                switch(result.val_conv.conv)
+                {
+                    case DTOH:
+                        if(strlen(&msg[i] > 19)
+                                {
+                                    result.msg = "Too long conversion target. Max char length 19.";
+                                    result.state = FAILURE;
+                                    return result;
+                                    //TODO ulong max size, how to ensure ulong max length as max input?
+                                }
+                         else{
+                         
+                        if((result.val_conv.d_val = strtoul(msg[i],strlen(&msg[i][0]),0)) > 0)
+                        {
+                            result.state = SUCCESS;
+                            return result;
+                        }
+                        }
+                        break;
+                    case DTOB:
+                        break;
+                    case DTOA:
+                        break;
+
+                }
+            }
+            //TODO handle value input
         }
     }
     return result;
