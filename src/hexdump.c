@@ -101,21 +101,45 @@ int main(int argc, char *argv[])
                     }
                     else 
                     {
-                        printf("FATAL ERROR: Wrong parse result. Aborting!\n");
+                        printf(S"FATAL ERROR: Wrong parse result. Aborting!\n");
                         exit(EXIT_FAILURE);
                     }
                     break;
                 case CONV_DTOB:
                     ;
-                    int i;
+                    unsigned long val = result.val_conv.d_val; 
+                    if(val == 0 || val == 1)
+                    {
+                        printf(S"%ul",val);
+                        exit(EXIT_SUCCESS);
+                    }
+                    char *ptr;
+                    if((ptr = (char*) malloc(sizeof(char) * VAL_BUFFER)) == NULL)
+                    {
+                        printf(S"Could not allocate memory. Aborting!\n");
+                        exit(EXIT_FAILURE);
+                    }
+                    unsigned long c_val = 0;
+                    short len = 2;
+                    bool first = true;
                     char *arr;
                     if((arr=malloc(sizeof(char) * sizeof(unsigned long))) == NULL)
                     {
-                        printf("Could not allocate memory! Aborting!\n");
+                        printf(S"Could not allocate memory! Aborting!\n");
                         exit(EXIT_FAILURE);
                     }
-                    //for(i=0;
-
+                    while(val > 0)
+                    {
+                        if(first)
+                        {
+                            c_val = len*2-1;
+                            len++;
+                            while(val>c_val)
+                            {
+                                
+                            }
+                        }
+                    }
 
                 case CONV_DTOA:
                     break;
