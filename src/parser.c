@@ -6,7 +6,6 @@
 #include "../include/conv.h"
 #include <limits.h>
 #define MSG_SIZE 64
-
 unsigned long hash_comp(unsigned char *str);
 
 struct parse_res parse_args(char **msg,const int a_count)

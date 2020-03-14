@@ -4,6 +4,7 @@
 #include "../include/conv.h"
 #include "../include/parser.h"
 #include "../include/w_error.h"
+#include "../include/ansi_c.h"
 #define VAL_BUFFER 128
 
 void w_error(char *msg)
@@ -51,34 +52,46 @@ int main(int argc, char *argv[])
                 case CONV_DTOH:
                     if(!result.file)
                     {
-                        char *hex = "A,B,C,D,E,F";
+                        //printf("%lu",result.val_conv.d_val);
+                        char hex[] = {'A','B','C','D','E','F'};
                         char *res = (char*) malloc(sizeof(char) * VAL_BUFFER);
+                        char *s_pt,*e_pt;
+                        s_pt = e_pt =res;
                         memset(res, '\0', sizeof(char) * VAL_BUFFER);
-                        int i = 0;
+                        int temp,dt,i,j;
+                        char t,ptt;
                         unsigned long c = result.val_conv.d_val;
                         int m = c % 16;
-                        if(m > 9)
+
+                        do
                         {
-                            int n = m - 10;
-                            strcpy(res++,&hex[n]);
-                        }
-                        else
-                        {
-                            *res++ = m + '0';
-                        }
-                        i++;
-                        int rem = c; 
-                        while((rem = rem / 16) > 1)
-                        {
-                            int s;
-                            int temp = rem % 16;
+                            temp = c%16;
                             if(temp > 9)
                             {
-                                s = rem - 10;
-                                strcpy(res++,&hex[s]);  
+                                dt = temp - 10;
+                                strncat(res,&hex[dt],1);
                             }
+                            else
+                            {
+                                t = temp + '0';
+                                strncat(res,&t,1);
+                            }
+                        } while((c = c/16) >= 1);
+                        int len = strlen(s_pt);
+                        for(i=0;i<len-1;i++)
+                        {
+                            e_pt++;
                         }
-                        printf("%s",res);
+                        for(j=0;j<len/2;j++)
+                        {
+                            ptt = *s_pt;
+                            *s_pt = *e_pt;
+                            *e_pt = ptt;
+                            e_pt--;
+                            s_pt++;
+                        }
+                        printf(S"%s\n",res);
+
                     }
                     else 
                     {
