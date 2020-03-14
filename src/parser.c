@@ -161,8 +161,8 @@ struct parse_res parse_args(char **msg,const int a_count)
             }
             //TODO handle value input
         }
-        return result;
     }
+    return result;
 }
 
 enum parse_state dlen(char *msg)
