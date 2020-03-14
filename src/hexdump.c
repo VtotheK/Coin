@@ -9,7 +9,7 @@
 
 void w_error(char *msg)
 {
-    printf("%s",msg);
+    perror(msg);
     exit(1);
 
 }
@@ -25,7 +25,8 @@ int main(int argc, char *argv[])
     
     if(result.state == FAILURE)
     {
-        printf("%s",result.msg);
+        printf("%s\n",result.msg);
+        exit(EXIT_FAILURE);
     }
     else if(result.state == SUCCESS)
     {
@@ -54,7 +55,12 @@ int main(int argc, char *argv[])
                     {
                         //printf("%lu",result.val_conv.d_val);
                         char hex[] = {'A','B','C','D','E','F'};
-                        char *res = (char*) malloc(sizeof(char) * VAL_BUFFER);
+                        char *res;
+                        if((res=(char*) malloc(sizeof(char) * VAL_BUFFER))==NULL)
+                        {
+                            printf("Could not allocate memory. Aborting!\n");
+                            exit(EXIT_FAILURE);
+                        }
                         char *s_pt,*e_pt;
                         s_pt = e_pt =res;
                         memset(res, '\0', sizeof(char) * VAL_BUFFER);
@@ -95,16 +101,27 @@ int main(int argc, char *argv[])
                     }
                     else 
                     {
-                        w_error("FATAL ERROR: Wrong parse result. Aborting!");
+                        printf("FATAL ERROR: Wrong parse result. Aborting!\n");
+                        exit(EXIT_FAILURE);
                     }
                     break;
                 case CONV_DTOB:
-                    break;
+                    ;
+                    int i;
+                    char *arr;
+                    if((arr=malloc(sizeof(char) * sizeof(unsigned long))) == NULL)
+                    {
+                        printf("Could not allocate memory! Aborting!\n");
+                        exit(EXIT_FAILURE);
+                    }
+                    //for(i=0;
+
+
                 case CONV_DTOA:
                     break;
             }
         }
-    }
+     }
 
     return 0;
 }
