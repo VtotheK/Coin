@@ -105,7 +105,7 @@ struct parse_res parse_args(char **msg,const int a_count)
                 case DTOB:
                     if(u_conv && !v_conv)
                     {
-                        result.val_conv.conv = CONV_BTOD;
+                        result.val_conv.conv = CONV_DTOB;
                         v_conv = true;
                     }
                     break;

@@ -1,11 +1,12 @@
 #include <stdio.h>
 #include <string.h>
+#include <math.h>
 #include <stdlib.h>
 #include "../include/conv.h"
 #include "../include/parser.h"
 #include "../include/w_error.h"
 #include "../include/ansi_c.h"
-#define VAL_BUFFER 128
+#define VAL_BUFFER 1024
 
 void w_error(char *msg)
 {
@@ -22,7 +23,7 @@ int main(int argc, char *argv[])
         exit(EXIT_FAILURE);
     }
     struct parse_res result = parse_args(++argv,argc-1);
-    
+
     if(result.state == FAILURE)
     {
         printf("%s\n",result.msg);
@@ -61,14 +62,13 @@ int main(int argc, char *argv[])
                             printf("Could not allocate memory. Aborting!\n");
                             exit(EXIT_FAILURE);
                         }
-                        char *s_pt,*e_pt;
-                        s_pt = e_pt =res;
+                        int             temp,dt,i,j;
+                        char            t,ptt;
+                        unsigned long   c = result.val_conv.d_val;
+                        int             m = c % 16;
+                        char            *s_pt,*e_pt;
+                        s_pt = e_pt = res;
                         memset(res, '\0', sizeof(char) * VAL_BUFFER);
-                        int temp,dt,i,j;
-                        char t,ptt;
-                        unsigned long c = result.val_conv.d_val;
-                        int m = c % 16;
-
                         do
                         {
                             temp = c%16;
@@ -108,44 +108,77 @@ int main(int argc, char *argv[])
                 case CONV_DTOB:
                     ;
                     unsigned long val = result.val_conv.d_val; 
-                    if(val == 0 || val == 1)
-                    {
-                        printf(S"%ul",val);
-                        exit(EXIT_SUCCESS);
-                    }
-                    char *ptr;
-                    if((ptr = (char*) malloc(sizeof(char) * VAL_BUFFER)) == NULL)
+                    printf("%lu\n",val);
+                    /* if(val == 0 || val == 1)
+                       {
+                       printf(S"%lu",val);
+                       exit(EXIT_SUCCESS);
+                       }*/
+                    int i;
+                    char            *st,*ptr;
+                    unsigned long   p_val,c_val;;
+                    double          c_bit = 1;
+                    bool            first = true;
+                    char            *arr;
+                    if((st = (char*) malloc(sizeof(char) * VAL_BUFFER)) == NULL)
                     {
                         printf(S"Could not allocate memory. Aborting!\n");
                         exit(EXIT_FAILURE);
                     }
-                    unsigned long c_val = 0;
-                    short len = 2;
-                    bool first = true;
-                    char *arr;
+                    ptr=st;
+                    memset(ptr,'0',sizeof(char)*VAL_BUFFER);
                     if((arr=malloc(sizeof(char) * sizeof(unsigned long))) == NULL)
                     {
                         printf(S"Could not allocate memory! Aborting!\n");
                         exit(EXIT_FAILURE);
                     }
-                    while(val > 0)
+                    int derp = 0;
+                    p_val = c_val = 1;
+                    while(val > 1)
                     {
+                        derp++;
+                        while(val>c_val)
+                        {
+                            p_val = c_val;
+                            if(derp>500)
+                            {
+                                break;
+                            }
+                            derp++;
+                            c_bit++;
+                            c_val = c_val * 2;
+                        }
+                        c_val = c_val - p_val;
+                        printf("%lu\n",val);
+                        val = val - c_val;
+                        for(i=0;i<c_bit-1;i++)
+                        {
+                            ptr++;
+                        }
+                        memset(ptr,'1',1);
                         if(first)
                         {
-                            c_val = len*2-1;
-                            len++;
-                            while(val>c_val)
-                            {
-                                
-                            }
+                            // printf("%f",c_bit);
+                            memset(st,'0',c_bit-1);
+                            first=false;
+                            ptr++;
+                            memset(ptr,'\0',1);
+                        }
+                        ptr=st;
+                        c_bit = c_val = 1;
+                        if(derp>500)
+                        {
+                            //printf("%lu",val);
+                            break;
                         }
                     }
-
+                    printf(S"%s",st);
+                    break;
                 case CONV_DTOA:
                     break;
             }
         }
-     }
+    }
 
     return 0;
 }
