@@ -97,6 +97,9 @@ int main(int argc, char *argv[])
                             s_pt++;
                         }
                         printf(S"%s\n",res);
+                        free(res);
+                        free(s_pt);
+                        free(e_pt);
                     }
                     else 
                     {
@@ -106,30 +109,20 @@ int main(int argc, char *argv[])
                     break;
                 case CONV_DTOB:
                     ;
-                    unsigned long val = result.val_conv.d_val; 
-                    /* if(val == 0 || val == 1)
-                       {
-                       printf(S"%lu",val);
-                       exit(EXIT_SUCCESS);
-                       }*/
-                    int i;
-                    char            *bg,*st,*ptr;
+                    unsigned long   val = result.val_conv.d_val; 
+                    int             i;
+                    char            *st,*ptr;
                     unsigned long   p_val,c_val;;
                     double          c_bit = 1;
                     bool            first = true;
-                    char            *arr;
                     if((st = (char*) malloc(sizeof(char) * VAL_BUFFER)) == NULL)
                     {
                         printf(S"Could not allocate memory. Aborting!\n");
                         exit(EXIT_FAILURE);
                     }
-                    bg=ptr=st;
+                    const char *bg = st;
+                    ptr=st;
                     memset(ptr,'0',sizeof(char)*VAL_BUFFER);
-                    if((arr=malloc(sizeof(char) * sizeof(unsigned long))) == NULL)
-                    {
-                        printf(S"Could not allocate memory! Aborting!\n");
-                        exit(EXIT_FAILURE);
-                    }
                     p_val = c_val = 1;
                     while(val > 0)
                     {
