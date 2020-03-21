@@ -134,22 +134,18 @@ int main(int argc, char *argv[])
                     }
                     int derp = 0;
                     p_val = c_val = 1;
-                    while(val > 1)
+                    while(val > 0)
                     {
-                        derp++;
-                        while(val>c_val)
+                        while(val>=c_val)
                         {
                             p_val = c_val;
-                            if(derp>500)
-                            {
-                                break;
-                            }
                             derp++;
                             c_bit++;
                             c_val = c_val * 2;
                         }
                         c_val = c_val - p_val;
-                        printf("%lu\n",val);
+                        c_bit--;
+                        printf("c_val:%lu\n",c_val);
                         val = val - c_val;
                         for(i=0;i<c_bit-1;i++)
                         {
@@ -159,18 +155,14 @@ int main(int argc, char *argv[])
                         if(first)
                         {
                             // printf("%f",c_bit);
-                            memset(st,'0',c_bit-1);
+                            memset(st,'0',c_bit-2);
                             first=false;
                             ptr++;
                             memset(ptr,'\0',1);
                         }
+                        printf("val:%lu\n",val);
                         ptr=st;
-                        c_bit = c_val = 1;
-                        if(derp>500)
-                        {
-                            //printf("%lu",val);
-                            break;
-                        }
+                        p_val = c_bit = c_val = 1;
                     }
                     printf(S"%s",st);
                     break;
