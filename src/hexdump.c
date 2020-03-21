@@ -97,7 +97,6 @@ int main(int argc, char *argv[])
                             s_pt++;
                         }
                         printf(S"%s\n",res);
-
                     }
                     else 
                     {
@@ -108,14 +107,13 @@ int main(int argc, char *argv[])
                 case CONV_DTOB:
                     ;
                     unsigned long val = result.val_conv.d_val; 
-                    printf("%lu\n",val);
                     /* if(val == 0 || val == 1)
                        {
                        printf(S"%lu",val);
                        exit(EXIT_SUCCESS);
                        }*/
                     int i;
-                    char            *st,*ptr;
+                    char            *bg,*st,*ptr;
                     unsigned long   p_val,c_val;;
                     double          c_bit = 1;
                     bool            first = true;
@@ -125,27 +123,24 @@ int main(int argc, char *argv[])
                         printf(S"Could not allocate memory. Aborting!\n");
                         exit(EXIT_FAILURE);
                     }
-                    ptr=st;
+                    bg=ptr=st;
                     memset(ptr,'0',sizeof(char)*VAL_BUFFER);
                     if((arr=malloc(sizeof(char) * sizeof(unsigned long))) == NULL)
                     {
                         printf(S"Could not allocate memory! Aborting!\n");
                         exit(EXIT_FAILURE);
                     }
-                    int derp = 0;
                     p_val = c_val = 1;
                     while(val > 0)
                     {
                         while(val>=c_val)
                         {
                             p_val = c_val;
-                            derp++;
                             c_bit++;
                             c_val = c_val * 2;
                         }
                         c_val = c_val - p_val;
                         c_bit--;
-                        printf("c_val:%lu\n",c_val);
                         val = val - c_val;
                         for(i=0;i<c_bit-1;i++)
                         {
@@ -154,17 +149,31 @@ int main(int argc, char *argv[])
                         memset(ptr,'1',1);
                         if(first)
                         {
-                            // printf("%f",c_bit);
                             memset(st,'0',c_bit-2);
                             first=false;
                             ptr++;
                             memset(ptr,'\0',1);
                         }
-                        printf("val:%lu\n",val);
                         ptr=st;
                         p_val = c_bit = c_val = 1;
                     }
-                    printf(S"%s",st);
+                    char temp;
+                    int k,j;
+                    ptr=st;
+                    size_t l = strlen(st);
+                    for(j=0;j<l-1;j++)
+                    {
+                        ptr++;
+                    }
+                    for(k=0;k<l/2;k++)
+                    {
+                        temp = *st;
+                        *st=*ptr;
+                        *ptr=temp;
+                        ptr--;
+                        st++;
+                    }
+                    printf(S"%s\n",bg);
                     break;
                 case CONV_DTOA:
                     break;
