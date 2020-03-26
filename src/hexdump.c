@@ -3,6 +3,7 @@
 #include <math.h>
 #include <stdlib.h>
 #include "../include/conv.h"
+#include "../include/char_val.h"
 #include "../include/parser.h"
 #include "../include/w_error.h"
 #include "../include/ansi_c.h"
@@ -23,7 +24,6 @@ int main(int argc, char *argv[])
         exit(EXIT_FAILURE);
     }
     struct parse_res result = parse_args(++argv,argc-1);
-
     if(result.state == FAILURE)
     {
         printf("%s\n",result.msg);
@@ -42,15 +42,31 @@ int main(int argc, char *argv[])
                 case CONV_HTOD:
                     if(!result.file)
                     {
-                        printf("%s",result.val_conv.val);
-                        int             i,len;
+                        printf("DEBUG%s\n\n",result.val_conv.val);
+                        int             i,len,temp;
                         unsigned long   res;
                         char            *ptr;
                         len = strlen(result.val_conv.val);
+                        ptr = result.val_conv.val;
                         for(i=0;i<len;i++,ptr++)
                         {
-                            
+
+                            if (*ptr <= UC_CHAR_MAX && *ptr >= UC_CHAR_MIN) 
+                            {
+                                temp = (int)*ptr;
+                                temp = temp - 55;
+                            }
+                            else if (*ptr <= LC_CHAR_MAX && *ptr >= LC_CHAR_MIN) 
+                            {
+                                temp = (int)*ptr;
+                                temp = temp - 87;
+                            }
+                            else if (*ptr <= NUM_MAX && *ptr >= NUM_MIN)
+                            {
+
+                            }
                         }
+                        printf("%d",temp);
                     }
                     break;
                 case CONV_HTOB:

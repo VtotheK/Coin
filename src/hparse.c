@@ -11,7 +11,7 @@ enum parse_state hinput(char *comp, size_t clen)
     for(i=0; i<clen;i++,ptr++)
     {
         if((*ptr <= UC_CHAR_MAX && *ptr >= UC_CHAR_MIN) ||
-           (*ptr <= LC_CHAR_MAX && *ptr >= LC_CHAR_MAX) ||
+           (*ptr <= LC_CHAR_MAX && *ptr >= LC_CHAR_MIN) ||
            (*ptr <= NUM_MAX     && *ptr >= NUM_MIN))
         {
         }
