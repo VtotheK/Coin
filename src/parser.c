@@ -2,13 +2,13 @@
 #include <string.h>
 #include <stdlib.h>
 #include <stdbool.h>
+#include <limits.h>
 #include "../include/parser.h"
 #include "../include/conv.h"
-#include <limits.h>
+#include "../include/hparse.h"
+#include "../include/dparse.h"
 #define MSG_SIZE 64
 unsigned long hash_comp(unsigned char *str);
-enum parse_state dlen(char *comp);
-unsigned long dval(char *msg);
 
 struct parse_res parse_args(char **msg,const int a_count)
 {
@@ -136,6 +136,29 @@ struct parse_res parse_args(char **msg,const int a_count)
             {
                 switch(result.val_conv.conv) //TODO change this enum int comparison to struct ulong 
                 {
+                    case CONV_HTOD:
+                        ;
+                        size_t len;
+                        if((len = strlen(msg[i]))>0)
+                        {
+                            result.state = hinput(&msg[i][0],len);
+                        }
+                        if(result.state == FAILURE)
+                        {
+                            char errmsg[] = "Some error message";
+                            result.msg = errmsg; 
+                            return result;
+                        }
+                        else if(result.state == SUCCESS)
+                        {
+                            int len = strlen(&msg[i][0]);
+                            len = (len+1) * sizeof(char);
+                            result.val_conv.val = malloc(len);
+                            memset(result.val_conv.val,'\0',len);
+                            strcpy(result.val_conv.val,&msg[i][0]);
+                            return result;
+                        }
+                        break;
                     case CONV_DTOH:
                         result.state = dlen(&msg[i][0]);
                         if(result.state == FAILURE)
@@ -156,7 +179,6 @@ struct parse_res parse_args(char **msg,const int a_count)
                         return result;
                     case CONV_DTOA:
                         break;
-
                 }
             }
             //TODO handle value input
@@ -165,33 +187,6 @@ struct parse_res parse_args(char **msg,const int a_count)
     return result;
 }
 
-enum parse_state dlen(char *msg)
-{
-
-    if(strlen(msg) > 19)
-    {
-        return  FAILURE;
-    }
-    else
-    {
-        return SUCCESS;
-    }
-}
-
-unsigned long dval(char *msg)
-{
-    unsigned long lres;
-    char *ptr;
-    if((lres = strtoul(&msg[0],&ptr,10)) > 0)
-    {
-        return lres;
-    }
-    else
-    {
-        printf("Error converting the input. Aborting!\n");
-        exit(EXIT_FAILURE);
-    }
-}
 
 unsigned long hash_comp(unsigned char *str)
 {
