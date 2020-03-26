@@ -53,13 +53,11 @@ int main(int argc, char *argv[])
 
                             if (*ptr <= UC_CHAR_MAX && *ptr >= UC_CHAR_MIN) 
                             {
-                                temp = (int)*ptr;
-                                temp = temp - 55;
+                                temp = (int)*ptr-55;
                             }
                             else if (*ptr <= LC_CHAR_MAX && *ptr >= LC_CHAR_MIN) 
                             {
-                                temp = (int)*ptr;
-                                temp = temp - 87;
+                                temp = (int)*ptr-87;
                             }
                             else if (*ptr <= NUM_MAX && *ptr >= NUM_MIN)
                             {
