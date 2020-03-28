@@ -8,16 +8,14 @@
 #include "../include/hparse.h"
 #include "../include/dparse.h"
 #define MSG_SIZE 64
-unsigned long hash_comp(unsigned char *str);
-
+unsigned long hash_comp(unsigned char*);
+void hret(struct parse_res*,char*);
 struct parse_res parse_args(char **msg,const int a_count)
 {
     struct parse_res result;
     result.state = SUCCESS;
     int i;
     int len;
-    //char **arg;
-    //arg = msg;
     bool u_conv = false;
     bool v_conv = false;
     for(i=0; i<a_count;i++)
@@ -136,28 +134,26 @@ struct parse_res parse_args(char **msg,const int a_count)
             {
                 switch(result.val_conv.conv) //TODO change this enum int comparison to struct ulong 
                 {
-                    case CONV_HTOD:
+                    size_t len; 
+                    case CONV_HTOB:
                         ;
-                        size_t len;
+                        len;
                         if((len = strlen(msg[i]))>0)
                         {
                             result.state = hinput(&msg[i][0],len);
                         }
-                        if(result.state == FAILURE)
+                        hret(&result,&msg[i][0]);
+                        return result;
+                        break;
+                    case CONV_HTOD:
+                        ;
+                        len;
+                        if((len = strlen(msg[i]))>0)
                         {
-                            char *errmsg = "Invalid value. Please check the input!";
-                            result.msg = errmsg; 
-                            return result;
+                            result.state = hinput(&msg[i][0],len);
                         }
-                        else if(result.state == SUCCESS)
-                        {
-                            int len = strlen(&msg[i][0]);
-                            len = (len+1) * sizeof(char);
-                            result.val_conv.val = malloc(len);
-                            memset(result.val_conv.val,'\0',len);
-                            strcpy(result.val_conv.val,&msg[i][0]);
-                            return result;
-                        }
+                        hret(&result,&msg[i][0]);
+                        return result;
                         break;
                     case CONV_DTOH:
                         result.state = dlen(&msg[i][0]);
@@ -198,4 +194,22 @@ unsigned long hash_comp(unsigned char *str)
         hash = ((hash << 5) + hash + c);
     }
     return hash;
+}
+
+void hret(struct parse_res *strc,char *msg)
+{
+
+    if(strc->state == FAILURE)
+    {
+        char *errmsg = "Invalid value. Please check the input!";
+        strc->msg = errmsg; 
+    }
+    else if(strc->state == SUCCESS)
+    {
+        int len = strlen(msg);
+        len = (len+1) * sizeof(char);
+        strc->val_conv.val = malloc(len);
+        memset(strc->val_conv.val,'\0',len);
+        strcpy(strc->val_conv.val,msg);
+    }
 }
