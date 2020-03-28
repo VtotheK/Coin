@@ -42,15 +42,13 @@ int main(int argc, char *argv[])
                 case CONV_HTOD:
                     if(!result.file)
                     {
-                        printf("DEBUG%s\n\n",result.val_conv.val);
-                        int             i,len,temp;
-                        unsigned long   res;
+                        int             s,len,temp;
+                        unsigned long   res = 0;
                         char            *ptr;
-                        len = strlen(result.val_conv.val);
+                        s = len = strlen(result.val_conv.val);
                         ptr = result.val_conv.val;
-                        for(i=0;i<len;i++,ptr++)
+                        for(;len>0;ptr++,len--)
                         {
-
                             if (*ptr <= UC_CHAR_MAX && *ptr >= UC_CHAR_MIN) 
                             {
                                 temp = (int)*ptr-55;
@@ -61,10 +59,16 @@ int main(int argc, char *argv[])
                             }
                             else if (*ptr <= NUM_MAX && *ptr >= NUM_MIN)
                             {
-
+                                temp =  *ptr - '0';
                             }
+                            else
+                            {
+                                printf("Value %d is invalid in  hexdump.c. Aborting!\n",temp);
+                                exit(1);
+                            }
+                            res = res + (pow(16,len-1) * temp);
                         }
-                        printf("%d",temp);
+                        printf(S"%lu\n",res);
                     }
                     break;
                 case CONV_HTOB:

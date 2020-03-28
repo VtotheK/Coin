@@ -145,14 +145,12 @@ struct parse_res parse_args(char **msg,const int a_count)
                         }
                         if(result.state == FAILURE)
                         {
-                            printf("helo");
-                            char errmsg[] = "Some error message";
+                            char *errmsg = "Invalid value. Please check the input!";
                             result.msg = errmsg; 
                             return result;
                         }
                         else if(result.state == SUCCESS)
                         {
-                            printf("jere");
                             int len = strlen(&msg[i][0]);
                             len = (len+1) * sizeof(char);
                             result.val_conv.val = malloc(len);
