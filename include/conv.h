@@ -1,18 +1,18 @@
 #ifndef CONV_H_
 #define CONV_H_ 
 #include <stdbool.h>
-#define HTOD 210644783713   //-htod
-#define HTOB 210644783711   //-htob
-#define HTOA 210644783710   //-htoa
-#define BTOH 210644568095   //-btoh
-#define BTOD 210644568091   //-btod
-#define BTOA 210644568088   //-btoa
-#define DTOH 210644639969   //-dtoh
-#define DTOB 210644639963   //-dtob
-#define DTOA 210644639962   //-dtoa
-#define VAL 6383189877      //-val
-#define FIL 6383172717      //-fil
-#define HELP 6951207451432  //--help
+#define HTOD    0xB87801E   //-hd
+#define HTOB    0xB87801C   //-hb
+#define HTOA    0xB87801B   //-ha
+#define BTOH    0xB877F5C   //-bh
+#define BTOD    0xB877F58   //-bd
+#define BTOA    0xB877F55   //-ba
+#define DTOH    0xB877F9E   //-dh
+#define DTOB    0xB877F98   //-db
+#define DTOA    0xB877F97   //-da
+#define HELP    0xB877887   //--h
+#define VAL     0x597088    //-v
+#define FIL     0x597078    //-f
 
 enum conv
 {

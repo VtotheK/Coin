@@ -27,7 +27,7 @@ int main(int argc, char *argv[])
     struct parse_res result = parse_args(++argv,argc-1);
     if(result.state == FAILURE)
     {
-        printf("%s\n",result.msg);
+        printf(S"%s\n",result.msg);
         exit(EXIT_FAILURE);
     }
     else if(result.state == SUCCESS)
@@ -83,8 +83,11 @@ int main(int argc, char *argv[])
                 case CONV_HTOA:
                     break;
                 case CONV_BTOH:
-                    break;
                 case CONV_BTOD:
+                    ;
+                    char            *s      = result.val_conv.val;
+                    unsigned long    start  = 0;
+                     
                     break;
                 case CONV_BTOA:
                     break;

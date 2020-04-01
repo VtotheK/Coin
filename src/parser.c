@@ -34,7 +34,7 @@ struct parse_res parse_args(char **msg,const int a_count)
                     else 
                     {
                         result.state = FAILURE;
-                        result.msg = "Multiple conversion types. Aborting\n";
+                        result.msg = "Multiple conversion types. Aborting!";
                         return result;
                     }
                     break;
@@ -47,7 +47,7 @@ struct parse_res parse_args(char **msg,const int a_count)
                     else 
                     {
                         result.state = FAILURE;
-                        result.msg = "Multiple conversion types. Aborting\n";
+                        result.msg = "Multiple conversion types. Aborting!";
                         return result;
                     }
                     break;
@@ -119,7 +119,7 @@ struct parse_res parse_args(char **msg,const int a_count)
                     result.state = HELPER;
                     return result;
                 default:
-                    result.msg = "Unknown input.\n";
+                    result.msg = "Unknown input.";
                     result.state = FAILURE;
                     return result;
             }
