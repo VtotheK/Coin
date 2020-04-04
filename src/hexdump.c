@@ -85,16 +85,29 @@ int main(int argc, char *argv[])
                 case CONV_BTOH:
                 case CONV_BTOD:
                     ;
-                    char            *s      = result.val_conv.val;
-                    unsigned long    start  = 0;
-                     
+                    const char   *st    = result.val_conv.val;
+                    char         *s     = st;  
+                    unsigned long start = 0;
+                    int             i;
+                    int             index[sizeof(unsigned long)];
+                    if((atoi(s)) <= 1)
+                    {
+                        int res = atoi(s);
+                        {
+                            printf("%d",res);
+                            exit(1);
+                        }
+                    }
+                    for(i=0;i<sizeof(unsigned long);i++,s++)
+                    {
+                        
+                    }
                     break;
                 case CONV_BTOA:
                     break;
                 case CONV_DTOH:
                     if(!result.file)
                     {
-                        //printf("%lu",result.val_conv.d_val);
                         char hex[] = {'A','B','C','D','E','F'};
                         char *res;
                         if((res=(char*) malloc(sizeof(char) * VAL_BUFFER))==NULL)
