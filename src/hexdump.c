@@ -86,14 +86,27 @@ int main(int argc, char *argv[])
                 case CONV_BTOD:
                     ;
                     //printf("%s",result.val_conv.val);
-                    const char       *st    = result.val_conv.val;
-                    char             *s     =   (char*) st;  
-                    unsigned long    start = 0;
-                    int              i;
-                    int              index[sizeof(unsigned long)];
-                    for(i=0;i<sizeof(unsigned long);i++,s++)
+                    const char      *st     = result.val_conv.val;
+                    size_t          len     = strlen(st);
+                    char            *s      = (char*) st;  
+                    unsigned long   res,val;
+                    int             i,count;
+                    int             index[sizeof(unsigned long)];
+                    for(i=0;i<len;i++)
                     {
-                       
+                        s++;
+                    }
+                    const char *end = s;
+                    count = len;
+                    val=1;
+                    while(count-- != 0)
+                    {
+                        if(*s == '1')
+                        {
+                            res = res + val;
+                        }
+                        val = pow(val,2);
+                        s--;
                     }
                     break;
                 case CONV_BTOA:
