@@ -3,13 +3,11 @@
 #include <stdlib.h>
 #include <stdbool.h>
 #include <limits.h>
-#include "../include/parser.h"
 #include "../include/conv.h"
+#include "../include/bparse.h"
 #include "../include/hparse.h"
 #include "../include/dparse.h"
-#define MSG_SIZE 64
-unsigned long hash_comp(unsigned char*);
-void hret(struct parse_res*,char*);
+#include "../include/parser.h"
 struct parse_res parse_args(char **msg,const int a_count)
 {
     struct parse_res result;
@@ -175,6 +173,36 @@ struct parse_res parse_args(char **msg,const int a_count)
                         return result;
                     case CONV_DTOA:
                         break;
+                    case CONV_BTOD:
+                        ;
+                        size_t l = strlen(&msg[i][0]);
+                        if(l<1)
+                        {
+                            result.state == FAILURE;
+                            result.msg = "No input";
+                            return result;
+                        }
+                        else if(l > (sizeof(unsigned long) * 8))
+                        {
+                            printf("Too long");
+                            result.state == FAILURE;
+                            result.msg = "Too long input";
+                            return result;
+                        }
+                        else
+                        {
+                            if((result.state = bparse(&msg[i][0],strlen(&msg[i][0]))) == FAILURE)
+                            {
+                                result.msg = "Invalid input.";
+                                return result;
+                            }
+                            else if(result.state == SUCCESS)
+                            {
+                                hret(&result,&msg[i][0]);
+                                return result;
+                            }
+                        }
+                        break;
                 }
             }
             //TODO handle value input
@@ -206,8 +234,7 @@ void hret(struct parse_res *strc,char *msg)
     }
     else if(strc->state == SUCCESS)
     {
-        int len = strlen(msg);
-        len = (len+1) * sizeof(char);
+        int len = (strlen(msg) + 1) * sizeof(char);
         strc->val_conv.val = malloc(len);
         memset(strc->val_conv.val,'\0',len);
         strcpy(strc->val_conv.val,msg);

@@ -85,22 +85,15 @@ int main(int argc, char *argv[])
                 case CONV_BTOH:
                 case CONV_BTOD:
                     ;
-                    const char   *st    = result.val_conv.val;
-                    char         *s     = st;  
-                    unsigned long start = 0;
-                    int             i;
-                    int             index[sizeof(unsigned long)];
-                    if((atoi(s)) <= 1)
-                    {
-                        int res = atoi(s);
-                        {
-                            printf("%d",res);
-                            exit(1);
-                        }
-                    }
+                    //printf("%s",result.val_conv.val);
+                    const char       *st    = result.val_conv.val;
+                    char             *s     =   (char*) st;  
+                    unsigned long    start = 0;
+                    int              i;
+                    int              index[sizeof(unsigned long)];
                     for(i=0;i<sizeof(unsigned long);i++,s++)
                     {
-                        
+                       
                     }
                     break;
                 case CONV_BTOA:
