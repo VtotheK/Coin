@@ -99,15 +99,20 @@ int main(int argc, char *argv[])
                     const char *end = s;
                     count = len;
                     val=1;
-                    while(count-- != 0)
+                    while(count > 0)
                     {
+                       // printf("%c",*s);
+                        printf("val:%d",val);
                         if(*s == '1')
                         {
-                            res = res + val;
+                            res = (res + val)-1;
+                          //  printf("res:%d",res);
                         }
-                        val = pow(val,2);
+                        val = val * 2;
                         s--;
+                        count--;
                     }
+                    printf("RES:%lu",res);
                     break;
                 case CONV_BTOA:
                     break;
