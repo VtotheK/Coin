@@ -3,6 +3,7 @@
 #include <stdlib.h>
 #include <stdbool.h>
 #include <limits.h>
+#include "../include/ansi_c.h"
 #include "../include/conv.h"
 #include "../include/bparse.h"
 #include "../include/hparse.h"
@@ -173,6 +174,8 @@ struct parse_res parse_args(char **msg,const int a_count)
                         return result;
                     case CONV_DTOA:
                         break;
+                    case CONV_BTOA:
+                    case CONV_BTOH:
                     case CONV_BTOD:
                         ;
                         size_t l = strlen(&msg[i][0]);
@@ -182,10 +185,9 @@ struct parse_res parse_args(char **msg,const int a_count)
                             result.msg = "No input";
                             return result;
                         }
-                        else if(l > (sizeof(unsigned long) * 8))
+                        else if(l > sizeof(unsigned long) * 8)
                         {
-                            printf("Too long");
-                            result.state == FAILURE;
+                            result.state = FAILURE;
                             result.msg = "Too long input";
                             return result;
                         }
@@ -203,6 +205,9 @@ struct parse_res parse_args(char **msg,const int a_count)
                             }
                         }
                         break;
+                    default:
+                        printf(S"Unknown conversion type!");
+                        exit(EXIT_FAILURE);
                 }
             }
             //TODO handle value input

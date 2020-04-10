@@ -9,7 +9,7 @@
 #include "../include/ansi_c.h"
 #define VAL_BUFFER 1024
 void bprint(unsigned long val);
-
+void hprint(unsigned long c);
 void w_error(char *msg)
 {
     perror(msg);
@@ -109,11 +109,13 @@ int main(int argc, char *argv[])
                     }
                     if(result.val_conv.conv == CONV_BTOH)
                     {
-
+                        hprint(res);
+                        exit(EXIT_SUCCESS);
                     }
                     else
                     {
                         printf(S"%lu\n",res);
+                        exit(EXIT_SUCCESS);
                     }
                     break;
                 case CONV_BTOA:
@@ -121,55 +123,9 @@ int main(int argc, char *argv[])
                 case CONV_DTOH:
                     if(!result.file)
                     {
-                        char hex[] = {'A','B','C','D','E','F'};
-                        char *res;
-                        if((res=(char*) malloc(sizeof(char) * VAL_BUFFER))==NULL)
-                        {
-                            printf("Could not allocate memory. Aborting!\n");
-                            exit(EXIT_FAILURE);
-                        }
-                        int             temp,dt,i,j,len,m;
-                        char            t,ptt;
-                        unsigned long   c = result.val_conv.d_val;
-                        char            *s_pt,*e_pt;
-                        s_pt = e_pt = res;
-                        m = c % 16;
-                        memset(res, '\0', sizeof(char) * VAL_BUFFER);
-                        do
-                        {
-                            temp = c%16;
-                            if(temp > 9)
-                            {
-                                dt = temp - 10;
-                                strncat(res,&hex[dt],1);
-                            }
-                            else
-                            {
-                                t = temp + '0';
-                                strncat(res,&t,1);
-                            }
-                        } while((c = c/16) >= 1);
-                        len = strlen(s_pt);
-                        for(i=0;i<len-1;i++)
-                        {
-                            e_pt++;
-                        }
-                        for(j=0;j<len/2;j++)
-                        {
-                            ptt = *s_pt;
-                            *s_pt = *e_pt;
-                            *e_pt = ptt;
-                            e_pt--;
-                            s_pt++;
-                        }
-                        printf(S"%s\n",res);
+                        hprint(result.val_conv.d_val);
+                        break;
                     }
-                    else 
-                    {
-                        printf(S"FATAL ERROR: Wrong parse result. Aborting!\n");
-                        exit(EXIT_FAILURE);
-                    }
-                    break;
                 case CONV_DTOB:
                     ;
                     if(!result.file)
@@ -250,3 +206,48 @@ void bprint(unsigned long val)
     printf(S"%s\n",bg);
 }
 
+void hprint(unsigned long c)
+{
+    char hex[] = {'A','B','C','D','E','F'};
+    char *res;
+    if((res=(char*) malloc(sizeof(char) * VAL_BUFFER))==NULL)
+    {
+        printf("Could not allocate memory. Aborting!\n");
+        exit(EXIT_FAILURE);
+    }
+    int             temp,dt,i,j,len,m;
+    char            t,ptt;
+    char            *s_pt,*e_pt;
+    s_pt = e_pt = res;
+    m = c % 16;
+    memset(res, '\0', sizeof(char) * VAL_BUFFER);
+    do
+    {
+        temp = c%16;
+        if(temp > 9)
+        {
+            dt = temp - 10;
+            strncat(res,&hex[dt],1);
+        }
+        else
+        {
+            t = temp + '0';
+            strncat(res,&t,1);
+        }
+    } while((c = c/16) >= 1);
+    len = strlen(s_pt);
+    for(i=0;i<len-1;i++)
+    {
+        e_pt++;
+    }
+    for(j=0;j<len/2;j++)
+    {
+        ptt = *s_pt;
+        *s_pt = *e_pt;
+        *e_pt = ptt;
+        e_pt--;
+        s_pt++;
+    }
+    printf(S"%s\n",res);
+    exit(EXIT_SUCCESS);
+}
