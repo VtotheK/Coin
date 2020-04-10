@@ -85,34 +85,36 @@ int main(int argc, char *argv[])
                 case CONV_BTOH:
                 case CONV_BTOD:
                     ;
-                    //printf("%s",result.val_conv.val);
-                    const char      *st     = result.val_conv.val;
-                    size_t          len     = strlen(st);
-                    char            *s      = (char*) st;  
+                    const char      *st = result.val_conv.val;
+                    int             len = strlen(result.val_conv.val)-1;
+                    char            *s  = (char*) st;  
                     unsigned long   res,val;
-                    int             i,count;
-                    int             index[sizeof(unsigned long)];
-                    for(i=0;i<len;i++)
+                    int             count = len + 1;
+                    for(;len>0;len--)
                     {
                         s++;
                     }
                     const char *end = s;
-                    count = len;
+                    res=0;
                     val=1;
                     while(count > 0)
                     {
-                       // printf("%c",*s);
-                        printf("val:%d",val);
-                        if(*s == '1')
+                        if(*s == 49)
                         {
-                            res = (res + val)-1;
-                          //  printf("res:%d",res);
+                            res = res + val;
                         }
                         val = val * 2;
                         s--;
                         count--;
                     }
-                    printf("RES:%lu",res);
+                    if(result.val_conv.conv == CONV_BTOH)
+                    {
+
+                    }
+                    else
+                    {
+                        printf(S"%lu\n",res);
+                    }
                     break;
                 case CONV_BTOA:
                     break;
@@ -126,12 +128,12 @@ int main(int argc, char *argv[])
                             printf("Could not allocate memory. Aborting!\n");
                             exit(EXIT_FAILURE);
                         }
-                        int             temp,dt,i,j;
+                        int             temp,dt,i,j,len,m;
                         char            t,ptt;
                         unsigned long   c = result.val_conv.d_val;
-                        int             m = c % 16;
                         char            *s_pt,*e_pt;
                         s_pt = e_pt = res;
+                        m = c % 16;
                         memset(res, '\0', sizeof(char) * VAL_BUFFER);
                         do
                         {
@@ -147,7 +149,7 @@ int main(int argc, char *argv[])
                                 strncat(res,&t,1);
                             }
                         } while((c = c/16) >= 1);
-                        int len = strlen(s_pt);
+                        len = strlen(s_pt);
                         for(i=0;i<len-1;i++)
                         {
                             e_pt++;
@@ -189,11 +191,12 @@ void bprint(unsigned long val)
     if(val == 1 || val == 0)
     {
         printf(S"%lu",val);
-        exit(1);
+        exit(EXIT_SUCCESS);
     }
-    int i;
-    char            *bg,*st,*ptr;
-    unsigned long   p_val,c_val;;
+    int             i,k,j;
+    char            *bg,*st,*ptr,temp;
+    unsigned long   p_val,c_val;
+    size_t          l;
     double          c_bit = 1;
     bool            first = true;
     if((st = (char*) malloc(sizeof(char) * VAL_BUFFER)) == NULL)
@@ -230,10 +233,8 @@ void bprint(unsigned long val)
         ptr=st;
         p_val = c_bit = c_val = 1;
     }
-    char temp;
-    int k,j;
     ptr=st;
-    size_t l = strlen(st);
+    l = strlen(st);
     for(j=0;j<l-1;j++)
     {
         ptr++;
@@ -248,3 +249,4 @@ void bprint(unsigned long val)
     }
     printf(S"%s\n",bg);
 }
+
