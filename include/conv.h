@@ -30,6 +30,7 @@ enum parse_state
 
 enum val_conv 
 {
+    EMP,
     CONV_HTOD,
     CONV_HTOB,
     CONV_HTOA,
@@ -66,6 +67,7 @@ struct value_conv
 
 struct parse_res
 {
+    struct parse_res *next;
     char *msg;
     enum parse_state state;
     bool file;

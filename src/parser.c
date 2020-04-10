@@ -12,8 +12,9 @@
 struct parse_res parse_args(char **msg,const int a_count)
 {
     struct parse_res result;
-    result.state = SUCCESS;
-    int i;
+    result.file = false;
+    result.state = FAILURE;
+    int i,j;
     int len;
     bool u_conv = false;
     bool v_conv = false;
@@ -24,24 +25,11 @@ struct parse_res parse_args(char **msg,const int a_count)
         {
             switch(hash_comp(msg[i]))
             {
-                case VAL:
-                    if(!u_conv)
-                    {
-                        result.file= false;
-                        u_conv = true;
-                    }
-                    else 
-                    {
-                        result.state = FAILURE;
-                        result.msg = "Multiple conversion types. Aborting!";
-                        return result;
-                    }
-                    break;
                 case FIL:
-                    if(!u_conv)
+                    if(!result.file)
                     {
                         result.file = true;
-                        u_conv = true;
+                        result.state == SUCCESS;
                     }
                     else 
                     {
@@ -51,83 +39,82 @@ struct parse_res parse_args(char **msg,const int a_count)
                     }
                     break;
                 case HTOD:
-                    if(u_conv && !v_conv)
+                    if(!result.file)
                     {
                         result.val_conv.conv = CONV_HTOD;
-                        v_conv = true;
                     }
                     break;
                 case HTOB:
-                    if(u_conv && !v_conv)
+                    if(!result.file)
                     {
                         result.val_conv.conv = CONV_HTOB;
-                        v_conv = true;
                     }
                     break;
                 case HTOA:
-                    if(u_conv && !v_conv)
+                    if(!result.file)
                     {
                         result.val_conv.conv = CONV_HTOA;
-                        v_conv = true;
                     }
                     break;
                 case BTOH:
-                    if(u_conv && !v_conv)
+                    if(!result.file)
                     {
                         result.val_conv.conv = CONV_BTOH;
-                        v_conv = true;
                     }
                     break;
                 case BTOD:
-                    if(u_conv && !v_conv)
+                    if(!result.file)
                     {
                         result.val_conv.conv = CONV_BTOD;
-                        v_conv = true;
                     }
                     break;
                 case BTOA:
-                    if(u_conv && !v_conv)
+                    if(!result.file)
                     {
                         result.val_conv.conv = CONV_BTOA;
-                        v_conv = true;
                     }
                     break;
                 case DTOH:
-                    if(u_conv && !v_conv)
+                    if(!result.file)
                     {
                         result.val_conv.conv = CONV_DTOH;
-                        v_conv = true;
                     }
                     break;
                 case DTOB:
-                    if(u_conv && !v_conv)
+                    if(!result.file)
                     {
                         result.val_conv.conv = CONV_DTOB;
-                        v_conv = true;
                     }
                     break;
                 case DTOA:
-                    if(u_conv && !v_conv)
+                    if(!result.file)
                     {
                         result.val_conv.conv = CONV_DTOA;
-                        v_conv = true;
                     }
                     break;
                 case HELP:
-                    result.msg = "This has some helper message";
-                    result.state = HELPER;
-                    return result;
-                default:
-                    result.msg = "Unknown input.";
-                    result.state = FAILURE;
-                    return result;
+                    if(!result.file)
+                    {
+                        result.msg = "This has some helper message";
+                        result.state = HELPER;
+                        return result;
+                    }
+            }
+            if(result.val_conv.conv != EMP && !result.file)
+            {
+                result.state = SUCCESS;
+            }
+            if(result.state == FAILURE)
+            {
+                result.msg = "Unknown input";
+                return result;
             }
         }
         else if(strlen(&msg[i][0]) > 2 && msg[i][0] == '-' && msg[i][1] ==  '-')
         {
             //TODO handle --commands
         }
-        else
+        for(j=0; i<a_count;i++)
         {
             if(u_conv && v_conv)
             {
@@ -135,79 +122,82 @@ struct parse_res parse_args(char **msg,const int a_count)
                 {
                     size_t len; 
                     case CONV_HTOB:
-                        ;
-                        len;
-                        if((len = strlen(msg[i]))>0)
-                        {
-                            result.state = hinput(&msg[i][0],len);
-                        }
-                        hret(&result,&msg[i][0]);
-                        return result;
-                        break;
+                    ;
+                    len;
+                    if((len = strlen(msg[j]))>0)
+                    {
+                        result.state = hinput(&msg[j][0],len);
+                    }
+                    hret(&result,&msg[j][0]);
+                    return result;
+                    break;
                     case CONV_HTOD:
-                        ;
-                        len;
-                        if((len = strlen(msg[i]))>0)
-                        {
-                            result.state = hinput(&msg[i][0],len);
-                        }
-                        hret(&result,&msg[i][0]);
-                        return result;
-                        break;
+                    ;
+                    len;
+                    if((len = strlen(msg[j]))>0)
+                    {
+                        result.state = hinput(&msg[j][0],len);
+                    }
+                    hret(&result,&msg[j][0]);
+                    return result;
+                    break;
                     case CONV_DTOH:
-                        result.state = dlen(&msg[i][0]);
-                        if(result.state == FAILURE)
-                        {
-                            result.msg = "Too long input, input limited to 19 chars";
-                            return result;
-                        }
-                        result.val_conv.d_val = dval(&msg[i][0]);
+                    result.state = dlen(&msg[j][0]);
+                    if(result.state == FAILURE)
+                    {
+                        result.msg = "Too long input, input limited to 19 chars";
                         return result;
+                    }
+                    result.val_conv.d_val = dval(&msg[j][0]);
+                    return result;
                     case CONV_DTOB:
-                        result.state = dlen(&msg[i][0]);
-                        if(result.state == FAILURE)
-                        {
-                            result.msg = "Too long input, input limited to 19 chars";
-                            return result;
-                        }
-                        result.val_conv.d_val = dval(&msg[i][0]);
+                    result.state = dlen(&msg[j][0]);
+                    if(result.state == FAILURE)
+                    {
+                        result.msg = "Too long input, input limited to 19 chars";
                         return result;
+                    }
+                    result.val_conv.d_val = dval(&msg[j][0]);
+                    return result;
                     case CONV_DTOA:
-                        break;
+                    break;
                     case CONV_BTOA:
                     case CONV_BTOH:
                     case CONV_BTOD:
-                        ;
-                        size_t l = strlen(&msg[i][0]);
-                        if(l<1)
+                    ;
+                    size_t l = strlen(&msg[j][0]);
+                    if(l<1)
+                    {
+                        result.state == FAILURE;
+                        result.msg = "No input";
+                        return result;
+                    }
+                    else if(l > sizeof(unsigned long) * 8)
+                    {
+                        result.state = FAILURE;
+                        result.msg = "Too long input";
+                        return result;
+                    }
+                    else
+                    {
+                        if((result.state = bparse(&msg[j][0],strlen(&msg[j][0]))) == FAILURE)
                         {
-                            result.state == FAILURE;
-                            result.msg = "No input";
+                            result.msg = "Invalid input.";
                             return result;
                         }
-                        else if(l > sizeof(unsigned long) * 8)
+                        else if(result.state == SUCCESS)
                         {
-                            result.state = FAILURE;
-                            result.msg = "Too long input";
+                            hret(&result,&msg[j][0]);
                             return result;
                         }
-                        else
-                        {
-                            if((result.state = bparse(&msg[i][0],strlen(&msg[i][0]))) == FAILURE)
-                            {
-                                result.msg = "Invalid input.";
-                                return result;
-                            }
-                            else if(result.state == SUCCESS)
-                            {
-                                hret(&result,&msg[i][0]);
-                                return result;
-                            }
-                        }
-                        break;
+                    }
+                    break;
                     default:
+                    if(!hash_comp(&msg[j][0]) == result.val_conv.conv)
+                    {
                         printf(S"Unknown conversion type!");
                         exit(EXIT_FAILURE);
+                    }
                 }
             }
             //TODO handle value input
