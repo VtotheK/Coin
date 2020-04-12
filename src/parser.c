@@ -12,6 +12,7 @@
 struct parse_res parse_args(char **msg,const int a_count)
 {
     struct parse_res result;
+    struct parse_res *n = &result;
     result.file = false;
     result.state = FAILURE;
     result.val_conv.conv = EMP;
@@ -124,13 +125,12 @@ struct parse_res parse_args(char **msg,const int a_count)
     }
     else if(result.file) 
         return result;
-
+    
     for(j=0,index=0; j<a_count;j++)
     {
         //printf("-dh HASH:%lu\n",hash_comp("-dh"));
         //printf("INPUT HASH:%lu",hash_comp(&msg[j][0]));
         if((hash_comp(&msg[j][0])) == target)
-            //index++;
         continue;
         switch(result.val_conv.conv) //TODO change this enum int comparison to struct ulong 
         {
@@ -138,25 +138,34 @@ struct parse_res parse_args(char **msg,const int a_count)
             case CONV_HTOB:
             ;
             len;
+
             if((len = strlen(msg[j]))>0)
-            {
-                result.state = hinput(&msg[j][0],len);
-            }
-            hret(result.val_conv.val[index],&msg[j][0]);
-            index++;
-            return result;
+                n->state = hinput(&msg[j][0],len);
+            if(n->state == SUCCESS)
+                n->val_conv.val = hret(&msg[j][0]);
+            else
+                n->msg = "Invalid input";
+            n->next = (struct parse_res*)malloc(sizeof(struct parse_res));
+            n = n->next;
             break;
+            
             case CONV_HTOD:
             ;
             len;
             if((len = strlen(msg[j]))>0)
-            {
-                result.state = hinput(&msg[j][0],len);
-            }
-            hret(result.val_conv.val[index],&msg[j][0]);
+                n->state = hinput(&msg[j][0],len);
+            if(n->state == SUCCESS)
+                n->val_conv.val = hret(&msg[j][0]);
+            else
+                n->msg = "Invalid input";
+            n->next = (struct parse_res*) malloc(sizeof(struct parse_res));
+            n = n->next;
             index++;
-            return result;
             break;
+            
+            case CONV_HTOA:
+            break; //TODO
+
             case CONV_DTOH:
             result.state = dlen(&msg[j][0]);
             if(result.state == FAILURE)
@@ -164,8 +173,9 @@ struct parse_res parse_args(char **msg,const int a_count)
                 result.msg = "Too long input, input limited to 19 chars";
                 return result;
             }
-            result.val_conv.d_val = dval(&msg[j][0]);
-            return result;
+            n->val_conv.d_val = dval(&msg[j][0]);
+            break;
+            
             case CONV_DTOB:
             result.state = dlen(&msg[j][0]);
             if(result.state == FAILURE)
@@ -174,9 +184,11 @@ struct parse_res parse_args(char **msg,const int a_count)
                 return result;
             }
             result.val_conv.d_val = dval(&msg[j][0]);
-            return result;
+            break;
+            
             case CONV_DTOA:
             break;
+            
             case CONV_BTOA:
             case CONV_BTOH:
             case CONV_BTOD:
@@ -184,30 +196,28 @@ struct parse_res parse_args(char **msg,const int a_count)
             size_t l = strlen(&msg[j][0]);
             if(l<1)
             {
-                result.state == FAILURE;
-                result.msg = "No input";
-                return result;
+                n->state == FAILURE;
+                n->msg = "No input";
             }
             else if(l > sizeof(unsigned long) * 8)
             {
-                result.state = FAILURE;
-                result.msg = "Too long input";
-                return result;
+                n->state = FAILURE;
+                n->msg = "Too long input";
             }
             else
             {
-                if((result.state = bparse(&msg[j][0],strlen(&msg[j][0]))) == FAILURE)
+                if((n->state = bparse(&msg[j][0],strlen(&msg[j][0]))) == FAILURE)
                 {
                     result.msg = "Invalid input.";
-                    return result;
                 }
-                else if(result.state == SUCCESS)
+                else if(n->state == SUCCESS)
                 {
-                    hret(result.val_conv.val[index],&msg[j][0]);
-                    index++;
-                    return result;
+                    n->val_conv.val = hret(&msg[j][0]);
+
                 }
             }
+            n->next = (struct parse_res*) malloc(sizeof(struct parse_res));
+            n = n->next;
             break;
             default:
             if(!hash_comp(&msg[j][0]) == result.val_conv.conv)
@@ -233,10 +243,11 @@ unsigned long hash_comp(unsigned char *str)
     return hash;
 }
 
-void hret(char *strc,char *msg)
+char* hret(char *msg)
 {
     int len = (strlen(msg) + 1) * sizeof(char);
-    strc  = malloc(len);
+    char *strc  = malloc(len);
     memset(strc,'\0',len);
     strcpy(strc,msg);
+    return strc;
 }

@@ -38,6 +38,7 @@ int main(int argc, char *argv[])
         }
         else if(!result.file) //handle value hexdump
         {
+            struct parse_res *n = &result;
             for(int i=0;i<argc-1;i++)
             {
                 switch(result.val_conv.conv)
@@ -49,8 +50,8 @@ int main(int argc, char *argv[])
                             int             s,len,temp;
                             unsigned long   res = 0;
                             char            *ptr;
-                            s = len = strlen(&result.val_conv.val[i][0]);
-                            ptr = result.val_conv.val[i];
+                            s = len = strlen(&n->val_conv.val[0]);
+                            ptr = n->val_conv.val;
                             for(;len>0;ptr++,len--)
                             {
                                 if (*ptr <= UC_CHAR_MAX && *ptr >= UC_CHAR_MIN) 
@@ -87,8 +88,8 @@ int main(int argc, char *argv[])
                     case CONV_BTOH:
                     case CONV_BTOD:
                         ;
-                        const char      *st = &result.val_conv.val[i][0];
-                        int             len = strlen(&result.val_conv.val[i][0])-1;
+                        const char      *st = &n->val_conv.val[0];
+                        int             len = strlen(&n->val_conv.val[0])-1;
                         char            *s  = (char*) st;  
                         unsigned long   res,val;
                         int             count = len + 1;
@@ -109,7 +110,7 @@ int main(int argc, char *argv[])
                             s--;
                             count--;
                         }
-                        if(result.val_conv.conv == CONV_BTOH)
+                        if(n->val_conv.conv == CONV_BTOH)
                         {
                             hprint(res);
                             exit(EXIT_SUCCESS);
@@ -125,19 +126,20 @@ int main(int argc, char *argv[])
                     case CONV_DTOH:
                         if(!result.file)
                         {
-                            hprint(result.val_conv.d_val[i]);
+                            hprint(n->val_conv.d_val);
                             break;
                         }
                     case CONV_DTOB:
                         ;
                         if(!result.file)
                         {
-                            bprint(result.val_conv.d_val[i]);
+                            bprint(n->val_conv.d_val);
                         }
                         break;
                     case CONV_DTOA:
                         break;
                 }
+                n = n->next;
             }
         }
     }

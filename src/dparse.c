@@ -16,21 +16,13 @@ enum parse_state dlen(char *msg)
     }
 }
 
-unsigned long* dval(char *msg)
+unsigned long dval(char *msg)
 {
-    unsigned long *lptr;
-    if((lptr = (unsigned long*) malloc(sizeof(unsigned long))) == NULL)
-    {
-        printf(S"Could not allocate memory!");
-        exit(EXIT_FAILURE);
-    }
-    printf("%s",msg);
     unsigned long lres;
     char *ptr;
     if((lres = strtoul(&msg[0],&ptr,10)) > 0)
     {
-        *lptr = lres;
-        return lptr;
+        return lres;
     }
     else
     {

@@ -60,8 +60,8 @@ struct value_conv
     enum val_conv conv;
     union
     {
-        char **val;
-        unsigned long *d_val;
+        char *val;
+        unsigned long d_val;
     };
 };
 
@@ -70,7 +70,6 @@ struct parse_res
     int argc;
     struct parse_res *next;
     char *msg;
-    char *arg_raw;
     enum parse_state state;
     bool file;
     union 
