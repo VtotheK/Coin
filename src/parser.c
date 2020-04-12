@@ -132,7 +132,7 @@ struct parse_res parse_args(char **msg,const int a_count)
         //printf("INPUT HASH:%lu",hash_comp(&msg[j][0]));
         if((hash_comp(&msg[j][0])) == target)
         continue;
-        switch(result.val_conv.conv) //TODO change this enum int comparison to struct ulong 
+        switch(n->val_conv.conv) //TODO change this enum int comparison to struct ulong 
         {
             size_t len; 
             case CONV_HTOB:
@@ -146,6 +146,7 @@ struct parse_res parse_args(char **msg,const int a_count)
             else
                 n->msg = "Invalid input";
             n->next = (struct parse_res*)malloc(sizeof(struct parse_res));
+            n->next->val_conv.conv = n->val_conv.conv;
             n = n->next;
             break;
             
@@ -159,31 +160,35 @@ struct parse_res parse_args(char **msg,const int a_count)
             else
                 n->msg = "Invalid input";
             n->next = (struct parse_res*) malloc(sizeof(struct parse_res));
+            n->next->val_conv.conv = n->val_conv.conv; 
             n = n->next;
-            index++;
             break;
             
             case CONV_HTOA:
             break; //TODO
 
             case CONV_DTOH:
-            result.state = dlen(&msg[j][0]);
-            if(result.state == FAILURE)
+            n->state = dlen(&msg[j][0],strlen(&msg[j][0]));
+            if(n->state == FAILURE)
             {
-                result.msg = "Too long input, input limited to 19 chars";
-                return result;
+                n->msg = "Invalid input";
             }
             n->val_conv.d_val = dval(&msg[j][0]);
+            n->next = (struct parse_res*) malloc(sizeof(struct parse_res));
+            n->next->val_conv.conv = n->val_conv.conv;
+            n = n->next;
             break;
             
             case CONV_DTOB:
-            result.state = dlen(&msg[j][0]);
-            if(result.state == FAILURE)
+            n->state = dlen(&msg[j][0],strlen(&msg[j][0]));
+            if(n->state == FAILURE)
             {
-                result.msg = "Too long input, input limited to 19 chars";
-                return result;
+                n->msg = "Invalid input";
             }
-            result.val_conv.d_val = dval(&msg[j][0]);
+            n->val_conv.d_val = dval(&msg[j][0]);
+            n->next = (struct parse_res*) malloc(sizeof(struct parse_res));
+            n->next->val_conv.conv = n->val_conv.conv;
+            n = n->next;
             break;
             
             case CONV_DTOA:
@@ -207,16 +212,12 @@ struct parse_res parse_args(char **msg,const int a_count)
             else
             {
                 if((n->state = bparse(&msg[j][0],strlen(&msg[j][0]))) == FAILURE)
-                {
-                    result.msg = "Invalid input.";
-                }
-                else if(n->state == SUCCESS)
-                {
+                    n->msg = "Invalid input.";
+                if(n->state == SUCCESS)
                     n->val_conv.val = hret(&msg[j][0]);
-
-                }
             }
             n->next = (struct parse_res*) malloc(sizeof(struct parse_res));
+            n->next->val_conv.conv = n->val_conv.conv;
             n = n->next;
             break;
             default:

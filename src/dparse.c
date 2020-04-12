@@ -4,16 +4,20 @@
 #include "../include/conv.h"
 #include "../include/dparse.h"
 #include "../include/ansi_c.h"
-enum parse_state dlen(char *msg)
+enum parse_state dlen(char *msg,size_t len)
 {
     if(strlen(msg) > 19)
     {
         return  FAILURE;
     }
-    else
+    for(;len>0;len--,msg++)
     {
-        return SUCCESS;
+        if(*msg < 48 || *msg > 57)
+        {
+            return FAILURE;
+        }
     }
+    return SUCCESS;
 }
 
 unsigned long dval(char *msg)
@@ -27,6 +31,5 @@ unsigned long dval(char *msg)
     else
     {
         printf("Error converting the input. Aborting!\n");
-        exit(EXIT_FAILURE);
     }
 }
