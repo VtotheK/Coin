@@ -38,103 +38,106 @@ int main(int argc, char *argv[])
         }
         else if(!result.file) //handle value hexdump
         {
-            switch(result.val_conv.conv)
+            for(int i=0;i<argc-1;i++)
             {
-                case CONV_HTOB:
-                case CONV_HTOD:
-                    if(!result.file)
-                    {
-                        int             s,len,temp;
-                        unsigned long   res = 0;
-                        char            *ptr;
-                        s = len = strlen(result.val_conv.val);
-                        ptr = result.val_conv.val;
-                        for(;len>0;ptr++,len--)
+                switch(result.val_conv.conv)
+                {
+                    case CONV_HTOB:
+                    case CONV_HTOD:
+                        if(!result.file)
                         {
-                            if (*ptr <= UC_CHAR_MAX && *ptr >= UC_CHAR_MIN) 
+                            int             s,len,temp;
+                            unsigned long   res = 0;
+                            char            *ptr;
+                            s = len = strlen(&result.val_conv.val[i][0]);
+                            ptr = result.val_conv.val[i];
+                            for(;len>0;ptr++,len--)
                             {
-                                temp = (int)*ptr-55;
+                                if (*ptr <= UC_CHAR_MAX && *ptr >= UC_CHAR_MIN) 
+                                {
+                                    temp = (int)*ptr-55;
+                                }
+                                else if (*ptr <= LC_CHAR_MAX && *ptr >= LC_CHAR_MIN) 
+                                {
+                                    temp = (int)*ptr-87;
+                                }
+                                else if (*ptr <= NUM_MAX && *ptr >= NUM_MIN)
+                                {
+                                    temp =  *ptr - '0';
+                                }
+                                else
+                                {
+                                    printf("Value %d is invalid in  hexdump.c. Aborting!\n",temp);
+                                    exit(1);
+                                }
+                                res = res + (pow(16,len-1) * temp);
                             }
-                            else if (*ptr <= LC_CHAR_MAX && *ptr >= LC_CHAR_MIN) 
+                            if(result.val_conv.conv == CONV_HTOD)
                             {
-                                temp = (int)*ptr-87;
+                                printf(S"%lu\n",res);
                             }
-                            else if (*ptr <= NUM_MAX && *ptr >= NUM_MIN)
+                            else if(result.val_conv.conv == CONV_HTOB)
                             {
-                                temp =  *ptr - '0';
+                                bprint(res);
                             }
-                            else
-                            {
-                                printf("Value %d is invalid in  hexdump.c. Aborting!\n",temp);
-                                exit(1);
-                            }
-                            res = res + (pow(16,len-1) * temp);
                         }
-                        if(result.val_conv.conv == CONV_HTOD)
+                        break;
+                    case CONV_HTOA:
+                        break;
+                    case CONV_BTOH:
+                    case CONV_BTOD:
+                        ;
+                        const char      *st = &result.val_conv.val[i][0];
+                        int             len = strlen(&result.val_conv.val[i][0])-1;
+                        char            *s  = (char*) st;  
+                        unsigned long   res,val;
+                        int             count = len + 1;
+                        for(;len>0;len--)
+                        {
+                            s++;
+                        }
+                        const char *end = s;
+                        res=0;
+                        val=1;
+                        while(count > 0)
+                        {
+                            if(*s == 49)
+                            {
+                                res = res + val;
+                            }
+                            val = val * 2;
+                            s--;
+                            count--;
+                        }
+                        if(result.val_conv.conv == CONV_BTOH)
+                        {
+                            hprint(res);
+                            exit(EXIT_SUCCESS);
+                        }
+                        else
                         {
                             printf(S"%lu\n",res);
+                            exit(EXIT_SUCCESS);
                         }
-                        else if(result.val_conv.conv == CONV_HTOB)
-                        {
-                            bprint(res);
-                        }
-                    }
-                    break;
-                case CONV_HTOA:
-                    break;
-                case CONV_BTOH:
-                case CONV_BTOD:
-                    ;
-                    const char      *st = result.val_conv.val;
-                    int             len = strlen(result.val_conv.val)-1;
-                    char            *s  = (char*) st;  
-                    unsigned long   res,val;
-                    int             count = len + 1;
-                    for(;len>0;len--)
-                    {
-                        s++;
-                    }
-                    const char *end = s;
-                    res=0;
-                    val=1;
-                    while(count > 0)
-                    {
-                        if(*s == 49)
-                        {
-                            res = res + val;
-                        }
-                        val = val * 2;
-                        s--;
-                        count--;
-                    }
-                    if(result.val_conv.conv == CONV_BTOH)
-                    {
-                        hprint(res);
-                        exit(EXIT_SUCCESS);
-                    }
-                    else
-                    {
-                        printf(S"%lu\n",res);
-                        exit(EXIT_SUCCESS);
-                    }
-                    break;
-                case CONV_BTOA:
-                    break;
-                case CONV_DTOH:
-                    if(!result.file)
-                    {
-                        hprint(result.val_conv.d_val);
                         break;
-                    }
-                case CONV_DTOB:
-                    ;
-                    if(!result.file)
-                    {
-                        bprint(result.val_conv.d_val);
-                    }
-                    break;
-                case CONV_DTOA:
-                    break;
+                    case CONV_BTOA:
+                        break;
+                    case CONV_DTOH:
+                        if(!result.file)
+                        {
+                            hprint(result.val_conv.d_val[i]);
+                            break;
+                        }
+                    case CONV_DTOB:
+                        ;
+                        if(!result.file)
+                        {
+                            bprint(result.val_conv.d_val[i]);
+                        }
+                        break;
+                    case CONV_DTOA:
+                        break;
+                }
             }
         }
     }

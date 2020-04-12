@@ -3,7 +3,7 @@
 #include <string.h>
 #include "../include/conv.h"
 #include "../include/dparse.h"
-
+#include "../include/ansi_c.h"
 enum parse_state dlen(char *msg)
 {
     if(strlen(msg) > 19)
@@ -16,13 +16,21 @@ enum parse_state dlen(char *msg)
     }
 }
 
-unsigned long dval(char *msg)
+unsigned long* dval(char *msg)
 {
+    unsigned long *lptr;
+    if((lptr = (unsigned long*) malloc(sizeof(unsigned long))) == NULL)
+    {
+        printf(S"Could not allocate memory!");
+        exit(EXIT_FAILURE);
+    }
+    printf("%s",msg);
     unsigned long lres;
     char *ptr;
     if((lres = strtoul(&msg[0],&ptr,10)) > 0)
     {
-        return lres;
+        *lptr = lres;
+        return lptr;
     }
     else
     {
