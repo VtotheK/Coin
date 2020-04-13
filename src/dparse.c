@@ -24,12 +24,6 @@ unsigned long dval(char *msg)
 {
     unsigned long lres;
     char *ptr;
-    if((lres = strtoul(&msg[0],&ptr,10)) > 0)
-    {
-        return lres;
-    }
-    else
-    {
-        printf("Error converting the input. Aborting!\n");
-    }
+    lres = strtoul(&msg[0],&ptr,10);
+    return lres;
 }

@@ -128,11 +128,9 @@ struct parse_res parse_args(char **msg,const int a_count)
     
     for(j=0,index=0; j<a_count;j++)
     {
-        //printf("-dh HASH:%lu\n",hash_comp("-dh"));
-        //printf("INPUT HASH:%lu",hash_comp(&msg[j][0]));
         if((hash_comp(&msg[j][0])) == target)
         continue;
-        switch(n->val_conv.conv) //TODO change this enum int comparison to struct ulong 
+        switch(n->val_conv.conv) 
         {
             size_t len; 
             case CONV_HTOB:

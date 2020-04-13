@@ -25,123 +25,113 @@ int main(int argc, char *argv[])
         exit(EXIT_FAILURE);
     }
     struct parse_res result = parse_args(++argv,argc-1);
-    if(result.state == FAILURE)
+    if(result.file) //handle file hexdump
     {
-        printf(S"%s\n",result.msg);
-        exit(EXIT_FAILURE);
-    }
-    else if(result.state == SUCCESS)
-    {
-        if(result.file) //handle file hexdump
-        {
 
-        }
-        else if(!result.file) //handle value hexdump
+    }
+    else if(!result.file) //handle value hexdump
+    {
+        struct parse_res *n = &result;
+        for(int i=0;i<argc-2;i++)
         {
-            struct parse_res *n = &result;
-            for(int i=0;i<argc-2;i++)
+            if(!n->file && n->state == SUCCESS)
             {
-                if(!n->file && n->state == SUCCESS)
+                switch(n->val_conv.conv)
                 {
-                    switch(n->val_conv.conv)
-                    {
-                        case CONV_HTOB:
-                        case CONV_HTOD:
-                            ;
-                            int             s,hlen,temp;
-                            unsigned long   res = 0;
-                            char            *ptr;
-                            s = hlen = strlen(&n->val_conv.val[0]);
-                            ptr = n->val_conv.val;
-                            for(;hlen>0;ptr++,hlen--)
+                    case CONV_HTOB:
+                    case CONV_HTOD:
+                        ;
+                        int             s,hlen,temp;
+                        unsigned long   res = 0;
+                        char            *ptr;
+                        s = hlen = strlen(&n->val_conv.val[0]);
+                        ptr = n->val_conv.val;
+                        for(;hlen>0;ptr++,hlen--)
+                        {
+                            if (*ptr <= UC_CHAR_MAX && *ptr >= UC_CHAR_MIN) 
                             {
-                                if (*ptr <= UC_CHAR_MAX && *ptr >= UC_CHAR_MIN) 
-                                {
-                                    temp = (int)*ptr-55;
-                                }
-                                else if (*ptr <= LC_CHAR_MAX && *ptr >= LC_CHAR_MIN) 
-                                {
-                                    temp = (int)*ptr-87;
-                                }
-                                else if (*ptr <= NUM_MAX && *ptr >= NUM_MIN)
-                                {
-                                    temp =  *ptr - '0';
-                                }
-                                else
-                                {
-                                    printf("Value %d is invalid in  hexdump.c. Aborting!\n",temp);
-                                    exit(1);
-                                }
-                                res = res + (pow(16,hlen-1) * temp);
+                                temp = (int)*ptr-55;
                             }
-                            if(n->val_conv.conv == CONV_HTOD)
+                            else if (*ptr <= LC_CHAR_MAX && *ptr >= LC_CHAR_MIN) 
                             {
-                                printf(S"%lu\n",res);
+                                temp = (int)*ptr-87;
                             }
-                            else if(n->val_conv.conv == CONV_HTOB)
+                            else if (*ptr <= NUM_MAX && *ptr >= NUM_MIN)
                             {
-                                bprint(res);
-                            }
-                            break;
-                        case CONV_HTOA:
-                            break;
-                        case CONV_BTOH:
-                        case CONV_BTOD:
-                            ;
-                            const char      *st = &n->val_conv.val[0];
-                            int             len = strlen(&n->val_conv.val[0])-1;
-                            char            *start = (char*) st;  
-                            unsigned long   bres,val;
-                            int             count = len + 1;
-                            for(;len>0;len--)
-                            {
-                                start++;
-                            }
-                            bres=0;
-                            val=1;
-                            while(count > 0)
-                            {
-                                if(*start == 49)
-                                {
-                                    bres = bres + val;
-                                }
-                                val = val * 2;
-                                start--;
-                                count--;
-                            }
-                            if(n->val_conv.conv == CONV_BTOH)
-                            {
-                                hprint(bres);
-                                //exit(EXIT_SUCCESS);
+                                temp =  *ptr - '0';
                             }
                             else
                             {
-                                printf(S"%lu\n",bres);
-                                //exit(EXIT_SUCCESS);
+                                printf("Value %d is invalid in  hexdump.c. Aborting!\n",temp);
+                                exit(1);
                             }
-                            break;
-                        case CONV_BTOA:
-                            break;
-                        case CONV_DTOH:
-                            hprint(n->val_conv.d_val);
-                            break;
-                        case CONV_DTOB:
-                            bprint(n->val_conv.d_val);
-                            break;
-                        case CONV_DTOA:
-                            break;
-                    }
+                            res = res + (pow(16,hlen-1) * temp);
+                        }
+                        if(n->val_conv.conv == CONV_HTOD)
+                        {
+                            printf(S"%lu\n",res);
+                        }
+                        else if(n->val_conv.conv == CONV_HTOB)
+                        {
+                            bprint(res);
+                        }
+                        break;
+                    case CONV_HTOA:
+                        break;
+                    case CONV_BTOH:
+                    case CONV_BTOD:
+                        ;
+                        const char      *st = &n->val_conv.val[0];
+                        int             len = strlen(&n->val_conv.val[0])-1;
+                        char            *start = (char*) st;  
+                        unsigned long   bres,val;
+                        int             count = len + 1;
+                        for(;len>0;len--)
+                        {
+                            start++;
+                        }
+                        bres=0;
+                        val=1;
+                        while(count > 0)
+                        {
+                            if(*start == 49)
+                            {
+                                bres = bres + val;
+                            }
+                            val = val * 2;
+                            start--;
+                            count--;
+                        }
+                        if(n->val_conv.conv == CONV_BTOH)
+                        {
+                            hprint(bres);
+                        }
+                        else
+                        {
+                            printf(S"%lu\n",bres);
+                        }
+                        break;
+                    case CONV_BTOA:
+                        break;
+                    case CONV_DTOH:
+                        hprint(n->val_conv.d_val);
+                        break;
+                    case CONV_DTOB:
+                        bprint(n->val_conv.d_val);
+                        break;
+                    case CONV_DTOA:
+                        break;
                 }
-                else if(n->state == FAILURE)
-                {
-                    printf(S"%s\n",n->msg);
-                }
-                else if(n->state == SUCCESS && n->file)
-                {
-                    //TODO file hexdump
-                }
-                n = n->next;
             }
+            else if(n->state == FAILURE)
+            {
+                printf(S"%s\n",n->msg);
+            }
+            else if(n->state == SUCCESS && n->file)
+            {
+                //TODO file hexdump
+            }
+            n = n->next;
         }
     }
     return 0;
