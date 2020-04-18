@@ -1,6 +1,6 @@
 #ifndef CONV_H_
-#define CONV_H_ 
 #include <stdbool.h>
+#define CONV_H_ 
 #define HTOD    0xB87801E   //-hd
 #define HTOB    0xB87801C   //-hb
 #define HTOA    0xB87801B   //-ha
@@ -13,7 +13,6 @@
 #define HELP    0xB877887   //--h
 #define VAL     0x597088    //-v
 #define FIL     0x597078    //-f
-
 enum conv
 {
     CONV_VAL,
@@ -55,6 +54,12 @@ struct file_conv
     char *path;
 };
 
+struct targets
+{
+    unsigned long ultarget; 
+    struct targets *next;
+};
+
 struct value_conv
 {
     enum val_conv conv;
@@ -69,6 +74,9 @@ struct parse_res
 {
     int argc;
     struct parse_res *next;
+    struct targets *targets;
+    size_t targetlen;
+    size_t val_len;
     char *msg;
     enum parse_state state;
     bool file;

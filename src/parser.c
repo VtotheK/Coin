@@ -9,18 +9,22 @@
 #include "../include/hparse.h"
 #include "../include/dparse.h"
 #include "../include/parser.h"
+bool istarget(unsigned long,struct parse_res, size_t);
 struct parse_res parse_args(char **msg,const int a_count)
 {
     struct parse_res result;
+    result.targets = malloc(sizeof(struct targets));
+    result.targetlen = 0;
+    result.val_len = 0;
     struct parse_res *n = &result;
     result.file = false;
     result.state = FAILURE;
     result.val_conv.conv = EMP;
     int i,j,index;
     unsigned long target,temptarget;
-    int len;
+    struct targets *ntarget = result.targets;
+    int len,fileindex;
     bool u_conv = false;
-    bool v_conv = false;
     for(i=0; i<a_count;i++)
     {
         len = strlen(&msg[i][0]);
@@ -31,6 +35,7 @@ struct parse_res parse_args(char **msg,const int a_count)
                 case FIL:
                     if(!result.file)
                     {
+                        fileindex = i;
                         result.file = true;
                         result.state == SUCCESS;
                     }
@@ -103,14 +108,25 @@ struct parse_res parse_args(char **msg,const int a_count)
                         return result;
                     }
             }
-            if(result.val_conv.conv != EMP || result.file)
+            if((result.val_conv.conv != EMP || result.file) && !u_conv)
             {
-                target = temptarget;
+                ntarget->ultarget = temptarget;
+                result.targetlen++;
+                ntarget->next = malloc(sizeof(struct targets));
+                ntarget = ntarget->next;
+                u_conv=true;
+            }
+            else if(result.val_conv.conv != EMP && u_conv)
+            {
+                result.msg = "Only one value conversion. Type -help to get help.";
+                result.state = FAILURE;
+                return result;
             }
         }
         else if(strlen(&msg[i][0]) > 2 && msg[i][0] == '-' && msg[i][1] ==  '-')
         {
-            //TODO handle --commands
+
+            //TODO handle --commands stack --commands to ntarget struct pointer
         }
     }
 
@@ -123,107 +139,118 @@ struct parse_res parse_args(char **msg,const int a_count)
         result.msg = "Unknown input";
         return result;
     }
-    else if(result.file) 
-        return result;
-    
-    for(j=0,index=0; j<a_count;j++)
+    if(result.file) 
     {
-        if((hash_comp(&msg[j][0])) == target)
-        continue;
-        switch(n->val_conv.conv) 
+        for(int k = 0; k<a_count;k++)
         {
-            size_t len; 
-            case CONV_HTOB:
-            ;
-            len;
+            //if(
+        }
 
-            if((len = strlen(msg[j]))>0)
-                n->state = hinput(&msg[j][0],len);
-            if(n->state == SUCCESS)
-                n->val_conv.val = hret(&msg[j][0]);
-            else
-                n->msg = "Invalid input";
-            n->next = (struct parse_res*)malloc(sizeof(struct parse_res));
-            n->next->val_conv.conv = n->val_conv.conv;
-            n = n->next;
-            break;
-            
-            case CONV_HTOD:
-            ;
-            len;
-            if((len = strlen(msg[j]))>0)
-                n->state = hinput(&msg[j][0],len);
-            if(n->state == SUCCESS)
-                n->val_conv.val = hret(&msg[j][0]);
-            else
-                n->msg = "Invalid input";
-            n->next = (struct parse_res*) malloc(sizeof(struct parse_res));
-            n->next->val_conv.conv = n->val_conv.conv; 
-            n = n->next;
-            break;
-            
-            case CONV_HTOA:
-            break; //TODO
-
-            case CONV_DTOH:
-            n->state = dlen(&msg[j][0],strlen(&msg[j][0]));
-            if(n->state == FAILURE)
+    }     
+    else if(result.val_conv.val != EMP && result.state == SUCCESS)
+    {
+        for(j=0,index=0; j<a_count;j++)
+        {
+            if(istarget(hash_comp(&msg[j][0]),result,result.targetlen))
+                continue;
+            switch(n->val_conv.conv) 
             {
-                n->msg = "Invalid input";
-            }
-            n->val_conv.d_val = dval(&msg[j][0]);
-            n->next = (struct parse_res*) malloc(sizeof(struct parse_res));
-            n->next->val_conv.conv = n->val_conv.conv;
-            n = n->next;
-            break;
-            
-            case CONV_DTOB:
-            n->state = dlen(&msg[j][0],strlen(&msg[j][0]));
-            if(n->state == FAILURE)
-            {
-                n->msg = "Invalid input";
-            }
-            n->val_conv.d_val = dval(&msg[j][0]);
-            n->next = (struct parse_res*) malloc(sizeof(struct parse_res));
-            n->next->val_conv.conv = n->val_conv.conv;
-            n = n->next;
-            break;
-            
-            case CONV_DTOA:
-            break;
-            
-            case CONV_BTOA:
-            case CONV_BTOH:
-            case CONV_BTOD:
-            ;
-            size_t l = strlen(&msg[j][0]);
-            if(l<1)
-            {
-                n->state == FAILURE;
-                n->msg = "No input";
-            }
-            else if(l > sizeof(unsigned long) * 8)
-            {
-                n->state = FAILURE;
-                n->msg = "Too long input";
-            }
-            else
-            {
-                if((n->state = bparse(&msg[j][0],strlen(&msg[j][0]))) == FAILURE)
-                    n->msg = "Invalid input.";
+                size_t len; 
+                case CONV_HTOB:
+                ;
+                len;
+                if((len = strlen(msg[j]))>0)
+                    n->state = hinput(&msg[j][0],len);
                 if(n->state == SUCCESS)
                     n->val_conv.val = hret(&msg[j][0]);
+                else
+                    n->msg = "Invalid input";
+                n->next = (struct parse_res*)malloc(sizeof(struct parse_res));
+                n->next->val_conv.conv = n->val_conv.conv;
+                n = n->next;
+                break;
+
+                case CONV_HTOD:
+                ;
+                len;
+                if((len = strlen(msg[j]))>0)
+                    n->state = hinput(&msg[j][0],len);
+                if(n->state == SUCCESS)
+                    n->val_conv.val = hret(&msg[j][0]);
+                else
+                    n->msg = "Invalid input";
+                n->next = (struct parse_res*) malloc(sizeof(struct parse_res));
+                n->next->val_conv.conv = n->val_conv.conv; 
+                n = n->next;
+                break;
+
+                case CONV_HTOA:
+                //TODO Decide if to use UTF-8 or just ASCII encoding 
+                break; //TODO
+
+                case CONV_DTOH:
+                n->state = dlen(&msg[j][0],strlen(&msg[j][0]));
+                if(n->state == FAILURE)
+                {
+                    n->msg = "Invalid input";
+                }
+                n->val_conv.d_val = dval(&msg[j][0]);
+                n->next = (struct parse_res*) malloc(sizeof(struct parse_res));
+                n->next->val_conv.conv = n->val_conv.conv;
+                n = n->next;
+                break;
+
+                case CONV_DTOB:
+                n->state = dlen(&msg[j][0],strlen(&msg[j][0]));
+                if(n->state == FAILURE)
+                {
+                    n->msg = "Invalid input";
+                }
+                n->val_conv.d_val = dval(&msg[j][0]);
+                n->next = (struct parse_res*) malloc(sizeof(struct parse_res));
+                n->next->val_conv.conv = n->val_conv.conv;
+                n = n->next;
+                break;
+
+                case CONV_DTOA:
+                //TODO Decide if to use UTF-8 or just ASCII encoding 
+                break;
+
+                case CONV_BTOA:
+                //TODO Decide if to use UTF-8 or just ASCII encoding 
+                case CONV_BTOH:
+                case CONV_BTOD:
+                ;
+                size_t l = strlen(&msg[j][0]);
+                if(l<1)
+                {
+                    n->state == FAILURE;
+                    n->msg = "No input";
+                }
+                else if(l > sizeof(unsigned long) * 8)
+                {
+                    n->state = FAILURE;
+                    n->msg = "Too long input";
+                }
+                else
+                {
+                    if((n->state = bparse(&msg[j][0],strlen(&msg[j][0]))) == FAILURE)
+                        n->msg = "Invalid input.";
+                    if(n->state == SUCCESS)
+                        n->val_conv.val = hret(&msg[j][0]);
+                }
+                n->next = (struct parse_res*) malloc(sizeof(struct parse_res));
+                n->next->val_conv.conv = n->val_conv.conv;
+                n = n->next;
+                break;
+                default:
+                if(!hash_comp(&msg[j][0]) == result.val_conv.conv)
+                {
+                    printf(S"Unknown conversion type!");
+                    exit(EXIT_FAILURE);
+                }
             }
-            n->next = (struct parse_res*) malloc(sizeof(struct parse_res));
-            n->next->val_conv.conv = n->val_conv.conv;
-            n = n->next;
-            break;
-            default:
-            if(!hash_comp(&msg[j][0]) == result.val_conv.conv)
-            {
-                printf(S"Unknown conversion type!");
-                exit(EXIT_FAILURE);
-            }
+            result.val_len++;
         }
     }
     return result;
@@ -249,4 +276,18 @@ char* hret(char *msg)
     memset(strc,'\0',len);
     strcpy(strc,msg);
     return strc;
+}
+
+bool istarget(unsigned long arg, struct parse_res res, size_t len)
+{
+   struct targets *currenttarget = res.targets; 
+   for(;len>0;len--) 
+   {
+        if(arg==currenttarget->ultarget)
+        {
+            return true;
+        }
+        currenttarget = currenttarget->next;
+   }
+   return false;
 }

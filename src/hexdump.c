@@ -32,7 +32,12 @@ int main(int argc, char *argv[])
     else if(!result.file) //handle value hexdump
     {
         struct parse_res *n = &result;
-        for(int i=0;i<argc-2;i++)
+        if(result.val_len == 0)
+        {
+            printf(S"%s\n",result.msg);
+            exit(EXIT_SUCCESS);
+        }
+        for(int i=0;i<result.val_len;i++)
         {
             if(!n->file && n->state == SUCCESS)
             {
