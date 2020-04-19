@@ -116,6 +116,13 @@ struct parse_res parse_args(char **msg,const int a_count)
                 result.state = FAILURE;
                 return result;
             }
+            else if(result.file && result.val_conv.conv != EMP)
+            {
+                result.msg = "No file and value conversion at same time.";
+                result.state = FAILURE;
+                return result;
+            }
+            
         }
         else if(strlen(&msg[i][0]) > 2 && msg[i][0] == '-' && msg[i][1] ==  '-')
         {
