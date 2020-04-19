@@ -10,12 +10,14 @@
 #include "../include/dparse.h"
 #include "../include/parser.h"
 bool istarget(unsigned long,struct parse_res, size_t);
+struct targets* addtarget(struct targets*,unsigned long);
 struct parse_res parse_args(char **msg,const int a_count)
 {
     struct parse_res result;
     result.targets = malloc(sizeof(struct targets));
     result.targetlen = 0;
     result.val_len = 0;
+    result.vertical=false;
     struct parse_res *n = &result;
     result.file = false;
     result.state = FAILURE;
@@ -27,10 +29,11 @@ struct parse_res parse_args(char **msg,const int a_count)
     bool u_conv = false;
     for(i=0; i<a_count;i++)
     {
+        temptarget = hash_comp(msg[i]);
         len = strlen(&msg[i][0]);
         if(len > 1 && msg[i][0] == '-' && msg[i][1] != '-')
         {
-            switch(temptarget = hash_comp(msg[i]))
+            switch(temptarget)
             {
                 case FIL:
                     if(!result.file)
@@ -110,22 +113,25 @@ struct parse_res parse_args(char **msg,const int a_count)
             }
             if((result.val_conv.conv != EMP || result.file) && !u_conv)
             {
-                ntarget->ultarget = temptarget;
                 result.targetlen++;
-                ntarget->next = malloc(sizeof(struct targets));
-                ntarget = ntarget->next;
+                ntarget = addtarget(ntarget,temptarget);
                 u_conv=true;
             }
             else if(result.val_conv.conv != EMP && u_conv)
             {
-                result.msg = "Only one value conversion. Type -help to get help.";
+                result.msg = "Only one value conversion. Type -help to see all commands.";
                 result.state = FAILURE;
                 return result;
             }
         }
         else if(strlen(&msg[i][0]) > 2 && msg[i][0] == '-' && msg[i][1] ==  '-')
         {
-
+            if(strcmp(&msg[i][0],"--v")==0)
+            {
+                result.vertical = true;
+                result.targetlen++;
+                ntarget = addtarget(ntarget,temptarget);
+            }
             //TODO handle --commands stack --commands to ntarget struct pointer
         }
     }
@@ -136,14 +142,15 @@ struct parse_res parse_args(char **msg,const int a_count)
     }
     else if(result.state == FAILURE)
     {
-        result.msg = "Unknown input";
+        result.msg = "No conversion type. Type --help to see all commands.";
         return result;
     }
     if(result.file) 
     {
         for(int k = 0; k<a_count;k++)
         {
-            //if(
+            if(istarget(hash_comp(&msg[j][0]),result,result.targetlen))
+                continue;
         }
 
     }     
@@ -280,14 +287,22 @@ char* hret(char *msg)
 
 bool istarget(unsigned long arg, struct parse_res res, size_t len)
 {
-   struct targets *currenttarget = res.targets; 
-   for(;len>0;len--) 
-   {
+    struct targets *currenttarget = res.targets; 
+    for(;len>0;len--) 
+    {
         if(arg==currenttarget->ultarget)
         {
             return true;
         }
         currenttarget = currenttarget->next;
-   }
-   return false;
+    }
+    return false;
+}
+
+struct targets* addtarget(struct targets* targets, unsigned long val)
+{
+    targets->ultarget = val;
+    targets->next = malloc(sizeof(struct targets));
+    targets = targets->next;
+    return targets;
 }

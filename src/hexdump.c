@@ -74,11 +74,15 @@ int main(int argc, char *argv[])
                         }
                         if(n->val_conv.conv == CONV_HTOD)
                         {
-                            printf(S"%lu\n",res);
+                            printf("%lu",res);
+                            if(result.vertical)
+                                printf("\n");
                         }
                         else if(n->val_conv.conv == CONV_HTOB)
                         {
                             bprint(res);
+                            if(result.vertical)
+                                printf("\n");
                         }
                         break;
                     case CONV_HTOA:
@@ -110,19 +114,27 @@ int main(int argc, char *argv[])
                         if(n->val_conv.conv == CONV_BTOH)
                         {
                             hprint(bres);
+                            if(result.vertical)
+                                printf("\n");
                         }
                         else
                         {
-                            printf(S"%lu\n",bres);
+                            printf("%lu",bres);
+                            if(result.vertical)
+                                printf("\n");
                         }
                         break;
                     case CONV_BTOA:
                         break;
                     case CONV_DTOH:
                         hprint(n->val_conv.d_val);
+                        if(result.vertical)
+                            printf("\n");
                         break;
                     case CONV_DTOB:
                         bprint(n->val_conv.d_val);
+                        if(result.vertical)
+                            printf("\n");
                         break;
                     case CONV_DTOA:
                         break;
@@ -130,7 +142,9 @@ int main(int argc, char *argv[])
             }
             else if(n->state == FAILURE)
             {
-                printf(S"%s\n",n->msg);
+                printf("%s",n->msg);
+                if(result.vertical)
+                    printf("\n");
             }
             else if(n->state == SUCCESS && n->file)
             {
@@ -146,7 +160,7 @@ void bprint(unsigned long val)
 {
     if(val == 1 || val == 0)
     {
-        printf(S"%lu\n",val);
+        printf("%lu",val);
         return;
     }
     int             i,k,j;
@@ -203,7 +217,7 @@ void bprint(unsigned long val)
         ptr--;
         st++;
     }
-    printf(S"%s\n",bg);
+    printf("%s",bg);
 }
 
 void hprint(unsigned long c)
@@ -248,5 +262,5 @@ void hprint(unsigned long c)
         e_pt--;
         s_pt++;
     }
-    printf(S"%s\n",res);
+    printf("%s",res);
 }

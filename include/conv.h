@@ -10,9 +10,13 @@
 #define DTOH    0xB877F9E   //-dh
 #define DTOB    0xB877F98   //-db
 #define DTOA    0xB877F97   //-da
+#define ATOD    0xB877F37   //-ad
+#define ATOH    0xB877F3B   //-ah
+#define ATOB    0xB877F35
 #define HELP    0xB877887   //--h
 #define VAL     0x597088    //-v
 #define FIL     0x597078    //-f
+#define VRT     0xB877895   //--v 
 enum conv
 {
     CONV_VAL,
@@ -38,7 +42,10 @@ enum val_conv
     CONV_BTOA,
     CONV_DTOH,
     CONV_DTOB,
-    CONV_DTOA
+    CONV_DTOA,
+    CONV_ATOD,
+    CONV_ATOH,
+    CONV_ATOB
 };
 
 enum f_conv
@@ -80,6 +87,7 @@ struct parse_res
     char *msg;
     enum parse_state state;
     bool file;
+    bool vertical;
     union 
     {
         struct file_conv f_conv;
