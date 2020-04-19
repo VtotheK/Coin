@@ -103,13 +103,6 @@ struct parse_res parse_args(char **msg,const int a_count)
                         result.val_conv.conv = CONV_DTOA;
                     }
                     break;
-                case HELP:
-                    if(!result.file && result.val_conv.conv == EMP)
-                    {
-                        result.msg = "This has some helper message";
-                        result.state = HELPER;
-                        return result;
-                    }
             }
             if((result.val_conv.conv != EMP || result.file) && !u_conv)
             {
@@ -119,7 +112,7 @@ struct parse_res parse_args(char **msg,const int a_count)
             }
             else if(result.val_conv.conv != EMP && u_conv)
             {
-                result.msg = "Only one value conversion. Type -help to see all commands.";
+                result.msg = "Only one value conversion. Type --h to see all commands.";
                 result.state = FAILURE;
                 return result;
             }
@@ -132,6 +125,12 @@ struct parse_res parse_args(char **msg,const int a_count)
                 result.targetlen++;
                 ntarget = addtarget(ntarget,temptarget);
             }
+            else if(temptarget == HELP)
+            {
+                result.msg = "Some helper message";
+                result.state == HELPER;
+                return result;
+            }
             //TODO handle --commands stack --commands to ntarget struct pointer
         }
     }
@@ -142,7 +141,7 @@ struct parse_res parse_args(char **msg,const int a_count)
     }
     else if(result.state == FAILURE)
     {
-        result.msg = "No conversion type. Type --help to see all commands.";
+        result.msg = "No conversion type. Type -h to see all commands.";
         return result;
     }
     if(result.file) 
