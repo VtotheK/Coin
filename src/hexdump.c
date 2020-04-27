@@ -25,11 +25,13 @@ int main(int argc, char *argv[])
         exit(EXIT_FAILURE);
     }
     struct parse_res result = parse_args(++argv,argc-1);
-    if(result.file) //handle file hexdump
-    {
-
-    }
-    else if(!result.file) //handle value hexdump
+    /*if(result.file) //handle file hexdump
+      {
+      printf("%s",result.filepath);
+      exit(EXIT_SUCCESS);
+      }*/
+    printf("\n");
+    if(!result.file) //handle value hexdump
     {
         struct parse_res *n = &result;
         if(result.val_len == 0)
@@ -74,7 +76,7 @@ int main(int argc, char *argv[])
                         }
                         if(n->val_conv.conv == CONV_HTOD)
                         {
-                            printf("%lu",res);
+                            printf("%lu ",res);
                             if(result.vertical)
                                 printf("\n");
                         }
@@ -119,7 +121,7 @@ int main(int argc, char *argv[])
                         }
                         else
                         {
-                            printf("%lu",bres);
+                            printf("%lu ",bres);
                             if(result.vertical)
                                 printf("\n");
                         }
@@ -146,12 +148,35 @@ int main(int argc, char *argv[])
                 if(result.vertical)
                     printf("\n");
             }
-            else if(n->state == SUCCESS && n->file)
-            {
-                //TODO file hexdump
-            }
             n = n->next;
         }
+        printf("\n");
+        free(n);
+    }
+    else if(result.state == SUCCESS && result.file)
+    {
+        long filelen;
+        char *buffer;
+        FILE *fileptr = fopen(result.filepath,"rb");
+        if(fileptr == NULL)
+        { 
+            printf("Invalid filepath\n");
+            exit(EXIT_FAILURE);
+        }
+        else
+        {
+            fseek(fileptr,0,SEEK_END);
+            filelen = ftell(fileptr);
+            buffer = (char*) malloc(sizeof(char) * filelen);
+            rewind(fileptr);
+            fread(buffer,filelen, sizeof(char),fileptr);
+            for(int a = 0; a<filelen;a++)
+            {
+                hprint(*buffer);
+                buffer++;
+            }
+        }
+
     }
     return 0;
 }
@@ -160,7 +185,7 @@ void bprint(unsigned long val)
 {
     if(val == 1 || val == 0)
     {
-        printf("%lu",val);
+        printf("%lu ",val);
         return;
     }
     int             i,k,j;
@@ -217,7 +242,7 @@ void bprint(unsigned long val)
         ptr--;
         st++;
     }
-    printf("%s",bg);
+    printf("%s ",bg);
 }
 
 void hprint(unsigned long c)
@@ -262,5 +287,5 @@ void hprint(unsigned long c)
         e_pt--;
         s_pt++;
     }
-    printf("%s",res);
+    printf("%s ",res);
 }

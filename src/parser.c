@@ -17,6 +17,7 @@ struct parse_res parse_args(char **msg,const int a_count)
     result.targets = malloc(sizeof(struct targets));
     result.targetlen = 0;
     result.val_len = 0;
+    result.filepath = NULL;
     result.vertical=false;
     struct parse_res *n = &result;
     result.file = false;
@@ -25,7 +26,7 @@ struct parse_res parse_args(char **msg,const int a_count)
     int i,j,index;
     unsigned long target,temptarget;
     struct targets *ntarget = result.targets;
-    int len,fileindex;
+    int len;
     bool u_conv = false;
     for(i=0; i<a_count;i++)
     {
@@ -38,7 +39,6 @@ struct parse_res parse_args(char **msg,const int a_count)
                 case FIL:
                     if(!result.file)
                     {
-                        fileindex = i;
                         result.file = true;
                         result.state == SUCCESS;
                     }
@@ -142,7 +142,7 @@ struct parse_res parse_args(char **msg,const int a_count)
         }
     }
 
-    if(result.val_conv.conv != EMP && !result.file)
+    if((result.val_conv.conv != EMP && !result.file) || result.file)
     {
         result.state = SUCCESS;
     }
@@ -155,8 +155,19 @@ struct parse_res parse_args(char **msg,const int a_count)
     {
         for(int k = 0; k<a_count;k++)
         {
-            if(istarget(hash_comp(&msg[j][0]),result,result.targetlen))
+            if(istarget(hash_comp(&msg[k][0]),result,result.targetlen))
                 continue;
+            if(result.filepath == NULL)
+            {
+                result.filepath = hret(&msg[k][0]);
+                return result;
+            }
+            else
+            {
+                result.msg = "One filepath only.";
+                result.state == FAILURE;
+                return result;
+            }
         }
 
     }     
