@@ -9,7 +9,7 @@
 #include "../include/ansi_c.h"
 #define VAL_BUFFER 1024
 void bprint(unsigned long val);
-void hprint(unsigned long c);
+void hprint(unsigned long c,bool file);
 void w_error(char *msg)
 {
     perror(msg);
@@ -83,6 +83,7 @@ int main(int argc, char *argv[])
                         else if(n->val_conv.conv == CONV_HTOB)
                         {
                             bprint(res);
+                            printf(" ");
                             if(result.vertical)
                                 printf("\n");
                         }
@@ -115,7 +116,8 @@ int main(int argc, char *argv[])
                         }
                         if(n->val_conv.conv == CONV_BTOH)
                         {
-                            hprint(bres);
+                            hprint(bres,false);
+                            printf(" ");
                             if(result.vertical)
                                 printf("\n");
                         }
@@ -129,12 +131,14 @@ int main(int argc, char *argv[])
                     case CONV_BTOA:
                         break;
                     case CONV_DTOH:
-                        hprint(n->val_conv.d_val);
+                        hprint(n->val_conv.d_val,false);
+                        printf(" ");
                         if(result.vertical)
                             printf("\n");
                         break;
                     case CONV_DTOB:
                         bprint(n->val_conv.d_val);
+                        printf(" ");
                         if(result.vertical)
                             printf("\n");
                         break;
@@ -156,6 +160,7 @@ int main(int argc, char *argv[])
     else if(result.state == SUCCESS && result.file)
     {
         long filelen;
+        int counter = 0;
         char *buffer;
         FILE *fileptr = fopen(result.filepath,"rb");
         if(fileptr == NULL)
@@ -170,11 +175,18 @@ int main(int argc, char *argv[])
             buffer = (char*) malloc(sizeof(char) * filelen);
             rewind(fileptr);
             fread(buffer,filelen, sizeof(char),fileptr);
-            for(int a = 0; a<filelen;a++)
+            for(int a = 0; a<filelen;a++,counter++)
             {
-                hprint(*buffer);
+                if(counter > 9)
+                {
+                    counter = 0;
+                    printf("\n");
+                }
+                printf("|");
+                hprint((unsigned long)*buffer,true);
                 buffer++;
             }
+            printf("\n");
         }
 
     }
@@ -242,10 +254,10 @@ void bprint(unsigned long val)
         ptr--;
         st++;
     }
-    printf("%s ",bg);
+    printf("%s",bg);
 }
 
-void hprint(unsigned long c)
+void hprint(unsigned long c, bool file)
 {
     char hex[] = {'A','B','C','D','E','F'};
     char *res;
@@ -254,6 +266,7 @@ void hprint(unsigned long c)
         printf("Could not allocate memory. Aborting!\n");
         exit(EXIT_FAILURE);
     }
+    unsigned long   c_temp = c;
     int             temp,dt,i,j,len,m;
     char            t,ptt;
     char            *s_pt,*e_pt;
@@ -287,5 +300,7 @@ void hprint(unsigned long c)
         e_pt--;
         s_pt++;
     }
-    printf("%s ",res);
+    if(file && c_temp < 16)
+       // printf("0");
+    printf("%s",res);
 }
