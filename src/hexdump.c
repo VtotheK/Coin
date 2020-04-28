@@ -7,9 +7,9 @@
 #include "../include/parser.h"
 #include "../include/w_error.h"
 #include "../include/ansi_c.h"
-#define VAL_BUFFER 1024
+#include "../include/hprint.h"
+
 void bprint(unsigned long val);
-void hprint(unsigned long c,bool file);
 void w_error(char *msg)
 {
     perror(msg);
@@ -25,12 +25,6 @@ int main(int argc, char *argv[])
         exit(EXIT_FAILURE);
     }
     struct parse_res result = parse_args(++argv,argc-1);
-    /*if(result.file) //handle file hexdump
-      {
-      printf("%s",result.filepath);
-      exit(EXIT_SUCCESS);
-      }*/
-    printf("\n");
     if(!result.file) //handle value hexdump
     {
         struct parse_res *n = &result;
@@ -175,11 +169,17 @@ int main(int argc, char *argv[])
             buffer = (char*) malloc(sizeof(char) * filelen);
             rewind(fileptr);
             fread(buffer,filelen, sizeof(char),fileptr);
+            unsigned long current = 0;
+            printf("00000000|");
             for(int a = 0; a<filelen;a++,counter++)
             {
                 if(counter > 9)
                 {
+                    printf("|");
+                    current = current + 10;
                     counter = 0;
+                    printf("\n");
+                    printf("         -------------------------------");
                     printf("\n");
                 }
                 printf("|");
@@ -188,119 +188,7 @@ int main(int argc, char *argv[])
             }
             printf("\n");
         }
-
     }
     return 0;
 }
 
-void bprint(unsigned long val)
-{
-    if(val == 1 || val == 0)
-    {
-        printf("%lu ",val);
-        return;
-    }
-    int             i,k,j;
-    char            *bg,*st,*ptr,temp;
-    unsigned long   p_val,c_val;
-    size_t          l;
-    double          c_bit = 1;
-    bool            first = true;
-    if((st = (char*) malloc(sizeof(char) * VAL_BUFFER)) == NULL)
-    {
-        printf(S"Could not allocate memory. Aborting!\n");
-        exit(EXIT_FAILURE);
-    }
-    bg=ptr=st;
-    memset(ptr,'0',sizeof(char)*VAL_BUFFER);
-    p_val = c_val = 1;
-    while(val > 0)
-    {
-        while(val>=c_val)
-        {
-            p_val = c_val;
-            c_bit++;
-            c_val = c_val * 2;
-        }
-        c_val = c_val - p_val;
-        c_bit--;
-        val = val - c_val;
-        for(i=0;i<c_bit-1;i++)
-        {
-            ptr++;
-        }
-        memset(ptr,'1',1);
-        if(first)
-        {
-            memset(st,'0',c_bit-2);
-            first=false;
-            ptr++;
-            memset(ptr,'\0',1);
-        }
-        ptr=st;
-        p_val = c_bit = c_val = 1;
-    }
-    ptr=st;
-    l = strlen(st);
-    for(j=0;j<l-1;j++)
-    {
-        ptr++;
-    }
-    for(k=0;k<l/2;k++)
-    {
-        temp = *st;
-        *st=*ptr;
-        *ptr=temp;
-        ptr--;
-        st++;
-    }
-    printf("%s",bg);
-}
-
-void hprint(unsigned long c, bool file)
-{
-    char hex[] = {'A','B','C','D','E','F'};
-    char *res;
-    if((res=(char*) malloc(sizeof(char) * VAL_BUFFER))==NULL)
-    {
-        printf("Could not allocate memory. Aborting!\n");
-        exit(EXIT_FAILURE);
-    }
-    unsigned long   c_temp = c;
-    int             temp,dt,i,j,len,m;
-    char            t,ptt;
-    char            *s_pt,*e_pt;
-    s_pt = e_pt = res;
-    m = c % 16;
-    memset(res, '\0', sizeof(char) * VAL_BUFFER);
-    do
-    {
-        temp = c%16;
-        if(temp > 9)
-        {
-            dt = temp - 10;
-            strncat(res,&hex[dt],1);
-        }
-        else
-        {
-            t = temp + '0';
-            strncat(res,&t,1);
-        }
-    } while((c = c/16) >= 1);
-    len = strlen(s_pt);
-    for(i=0;i<len-1;i++)
-    {
-        e_pt++;
-    }
-    for(j=0;j<len/2;j++)
-    {
-        ptt = *s_pt;
-        *s_pt = *e_pt;
-        *e_pt = ptt;
-        e_pt--;
-        s_pt++;
-    }
-    if(file && c_temp < 16)
-       // printf("0");
-    printf("%s",res);
-}
