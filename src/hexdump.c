@@ -168,7 +168,9 @@ int main(int argc, char *argv[])
         }
         else
         {
-            const char *start = (char*) malloc(8*sizeof(char));
+            const char *start = (char*) malloc(17*sizeof(char));
+            char *txtptr = (char*) start;
+            memset(txtptr,'\0',17);
             fseek(fileptr,0,SEEK_END);
             filelen = ftell(fileptr);
             buffer = (char*) malloc(sizeof(char) * filelen);
@@ -176,11 +178,13 @@ int main(int argc, char *argv[])
             fread(buffer,filelen, sizeof(char),fileptr);
             unsigned long current = 0;
             printf("%s[%s00000000%s]%s ",HRED,reset,HRED,reset);
-            for(int a = 0; a<filelen;a++,counter++)
+            for(int a = 0; a<filelen;a++,counter++,buffer++,txtptr++)
             {
                 if(counter > 16)
                 {
                     printf("%s|%s",GRN,reset);
+                    printf("%s%s%s",RED,start,reset);
+                    txtptr = (char*)start;
                     current = current + 1;
                     counter = 0;
                     printf("\n%s[%s",HRED,reset);
@@ -197,7 +201,12 @@ int main(int argc, char *argv[])
                 if(*buffer<16)
                     printf("%s0%s",BCYN,reset);
                 printf("%s%s%s",BCYN,val,reset);
-                buffer++;
+                if(*buffer < 255 && *buffer != 10)
+                    *txtptr = *buffer;
+                else if(*buffer==10)
+                    *txtptr = ' '; 
+                else
+                    *txtptr = '.';
             }
             printf("\n");
         }

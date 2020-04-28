@@ -270,7 +270,7 @@ struct parse_res parse_args(char **msg,const int a_count)
                 default:
                 if(!hash_comp(&msg[j][0]) == result.val_conv.conv)
                 {
-                    printf(S"Unknown conversion type!");
+                    printf("Unknown conversion type!");
                     exit(EXIT_FAILURE);
                 }
             }
