@@ -2,8 +2,8 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
-#include "../include/hprint.h"
-void hprint(unsigned long c, bool file)
+#include "../include/hget.h"
+char* hget(unsigned long c)
 {
     char hex[] = {'A','B','C','D','E','F'};
     char *res;
@@ -12,7 +12,6 @@ void hprint(unsigned long c, bool file)
         printf("Could not allocate memory. Aborting!\n");
         exit(EXIT_FAILURE);
     }
-    unsigned long   c_temp = c;
     int             temp,dt,i,j,len,m;
     char            t,ptt;
     char            *s_pt,*e_pt;
@@ -46,7 +45,5 @@ void hprint(unsigned long c, bool file)
         e_pt--;
         s_pt++;
     }
-    if(file && c_temp < 16)
-        printf("0");
-    printf("%s",res);
+    return res;
 }

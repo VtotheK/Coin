@@ -7,7 +7,7 @@
 #include "../include/parser.h"
 #include "../include/w_error.h"
 #include "../include/ansi_c.h"
-#include "../include/hprint.h"
+#include "../include/hget.h"
 
 void bprint(unsigned long val);
 void w_error(char *msg)
@@ -30,7 +30,7 @@ int main(int argc, char *argv[])
         struct parse_res *n = &result;
         if(result.val_len == 0)
         {
-            printf(S"%s\n",result.msg);
+            printf("%s\n",result.msg);
             exit(EXIT_SUCCESS);
         }
         for(int i=0;i<result.val_len;i++)
@@ -110,7 +110,8 @@ int main(int argc, char *argv[])
                         }
                         if(n->val_conv.conv == CONV_BTOH)
                         {
-                            hprint(bres,false);
+                            char *resptr = hget(bres);
+                            printf("%s",resptr);
                             printf(" ");
                             if(result.vertical)
                                 printf("\n");
@@ -125,7 +126,9 @@ int main(int argc, char *argv[])
                     case CONV_BTOA:
                         break;
                     case CONV_DTOH:
-                        hprint(n->val_conv.d_val,false);
+                        ;
+                        char *resptr = hget(n->val_conv.d_val);
+                        printf("%s",resptr);
                         printf(" ");
                         if(result.vertical)
                             printf("\n");
@@ -148,7 +151,8 @@ int main(int argc, char *argv[])
             }
             n = n->next;
         }
-        printf("\n");
+        if(!result.vertical)
+            printf("\n");
         free(n);
     }
     else if(result.state == SUCCESS && result.file)
@@ -164,26 +168,35 @@ int main(int argc, char *argv[])
         }
         else
         {
+            const char *start = (char*) malloc(8*sizeof(char));
             fseek(fileptr,0,SEEK_END);
             filelen = ftell(fileptr);
             buffer = (char*) malloc(sizeof(char) * filelen);
             rewind(fileptr);
             fread(buffer,filelen, sizeof(char),fileptr);
             unsigned long current = 0;
-            printf("00000000|");
+            printf("%s[%s00000000%s]%s ",HRED,reset,HRED,reset);
             for(int a = 0; a<filelen;a++,counter++)
             {
-                if(counter > 9)
+                if(counter > 16)
                 {
-                    printf("|");
-                    current = current + 10;
+                    printf("%s|%s",GRN,reset);
+                    current = current + 1;
                     counter = 0;
-                    printf("\n");
-                    printf("         -------------------------------");
-                    printf("\n");
+                    printf("\n%s[%s",HRED,reset);
+                    char *offset = hget(current);
+                    for(int k = 0; k<7-strlen(offset);k++)
+                        printf("0");
+                    printf("%s0%s]%s ",offset,HRED,reset);
+
                 }
-                printf("|");
-                hprint((unsigned long)*buffer,true);
+                else if(counter == 8)
+                    printf("%s|%s   ",GRN,reset);
+                printf("%s|%s",GRN,reset);
+                char *val = hget((unsigned long)*buffer);
+                if(*buffer<16)
+                    printf("%s0%s",BCYN,reset);
+                printf("%s%s%s",BCYN,val,reset);
                 buffer++;
             }
             printf("\n");
