@@ -86,6 +86,7 @@ struct parse_res
     size_t val_len;
     char *msg;
     char *filepath;
+    int f_readlen;
     enum parse_state state;
     bool file;
     bool vertical;

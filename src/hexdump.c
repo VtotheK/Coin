@@ -171,19 +171,35 @@ int main(int argc, char *argv[])
             const char *start = (char*) malloc(17*sizeof(char));
             char *txtptr = (char*) start;
             memset(txtptr,'\0',17);
-            fseek(fileptr,0,SEEK_END);
-            filelen = ftell(fileptr);
+            if(result.f_readlen > 0)
+            {
+                fseek(fileptr,0,SEEK_END);
+                if(ftell(fileptr) < result.f_readlen)
+                {
+                    printf("Unable to read file");
+                    exit(EXIT_FAILURE);
+                }
+                fseek(fileptr,result.f_readlen,SEEK_SET);
+                filelen = ftell(fileptr);
+            }
+            else
+            {
+                fseek(fileptr,0,SEEK_END);
+                filelen = ftell(fileptr);
+            }
             buffer = (char*) malloc(sizeof(char) * filelen);
             rewind(fileptr);
             fread(buffer,filelen, sizeof(char),fileptr);
             unsigned long current = 0;
             printf("%s[%s00000000%s]%s ",HRED,reset,HRED,reset);
+            int last = filelen % 16;
             for(int a = 0; a<filelen;a++,counter++,buffer++,txtptr++)
             {
-                if(counter > 16)
+                if(counter > 15)
                 {
                     printf("%s|%s",GRN,reset);
                     printf("%s%s%s",RED,start,reset);
+                    memset((char*)start,'\0',17);
                     txtptr = (char*)start;
                     current = current + 1;
                     counter = 0;
@@ -207,6 +223,21 @@ int main(int argc, char *argv[])
                     *txtptr = ' '; 
                 else
                     *txtptr = '.';
+            }
+            if(last != 0);
+            {
+                if(last < 8)
+                    printf("   ");
+                int end = (16*3-1) - (last * 3 - 2);
+                printf("%s|%s",GRN,reset);
+                for(int h = 0; h < end; h++)
+                {
+                    printf(" ");
+                    if(h==end-1)
+                        printf("%s|%s",GRN,reset);
+                }
+                txtptr = (char*)start;
+                printf("%s",txtptr);
             }
             printf("\n");
         }

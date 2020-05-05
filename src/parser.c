@@ -126,7 +126,7 @@ struct parse_res parse_args(char **msg,const int a_count)
         }
         else if(strlen(&msg[i][0]) > 2 && msg[i][0] == '-' && msg[i][1] ==  '-')
         {
-            if(strcmp(&msg[i][0],"--v")==0)
+            if(!result.file && strcmp(&msg[i][0],"--v")==0)
             {
                 result.vertical = true;
                 result.targetlen++;
@@ -137,6 +137,35 @@ struct parse_res parse_args(char **msg,const int a_count)
                 result.msg = "Some helper message";
                 result.state == HELPER;
                 return result;
+            }
+            else if(result.file && strlen(&msg[i][0]) > 3 && msg[i][0] == '-'
+                    && msg[i][1] == '-' && msg[i][2] == 'l')
+            {
+                int readlen,arglen;
+                arglen = strlen(&msg[i][0]) - 3;
+                char *arg;
+                if((arg = malloc(arglen * sizeof(char) + 1))==NULL)
+                {
+                    printf("Could not allocate memory");
+                    exit(EXIT_FAILURE);
+                }
+                memset(arg,'\0',arglen+1);
+                strncpy(arg,&msg[i][3],arglen);
+                if((readlen = atoi(arg)) == 0)
+                {
+                    result.state = FAILURE;
+                    result.msg = "Invalid file read length.";
+                    return result;
+                }
+                else
+                {
+                    result.f_readlen = readlen;
+                    result.targetlen++;
+                    ntarget = addtarget(ntarget,temptarget);
+                }
+            }
+            {
+                
             }
             //TODO handle --commands stack --commands to ntarget struct pointer
         }
