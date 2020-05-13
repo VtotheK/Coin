@@ -224,21 +224,23 @@ int main(int argc, char *argv[])
                 else
                     *txtptr = '.';
             }
-            if(last != 0);
+            if(last != 0)
             {
-                if(last < 8)
-                    printf("   ");
-                int end = (16*3-1) - (last * 3 - 2);
                 printf("%s|%s",GRN,reset);
+                if(last < 8)
+                    printf("    ");
+                int end = (16*3-1) - (last * 3);
                 for(int h = 0; h < end; h++)
                 {
                     printf(" ");
                     if(h==end-1)
                         printf("%s|%s",GRN,reset);
                 }
-                txtptr = (char*)start;
-                printf("%s",txtptr);
             }
+						else
+								printf("%s|%s",GRN,reset);
+           	txtptr = (char*)start;
+          	printf("%s%s%s",HRED,txtptr,reset);
             printf("\n");
         }
     }
