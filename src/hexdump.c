@@ -26,7 +26,7 @@ int main(int argc, char *argv[])
 				printf("No command line arguments.");
 				exit(EXIT_FAILURE);
 		}
-		//setlocale(LC_ALL,"");
+		setlocale(LC_ALL,"C");
 		struct parse_res result = parse_args(++argv,argc-1);
 		if(!result.file) //handle value hexdump
 		{
@@ -173,8 +173,8 @@ int main(int argc, char *argv[])
 				}
 				else
 				{
-						const char *start = (char*) malloc(17*sizeof(char));
-						txtptr = (char*) start;
+						const unsigned char *start = (unsigned char*) malloc(17*sizeof(char));
+						txtptr = (unsigned char*) start;
 						memset(txtptr,'\0',17);
 						if(result.f_readlen > 0)
 						{
@@ -192,9 +192,9 @@ int main(int argc, char *argv[])
 								fseek(fileptr,0,SEEK_END);
 								filelen = ftell(fileptr);
 						}
-						buffer = (char*) malloc(sizeof(char) * filelen);
+						buffer = (unsigned char*) malloc(sizeof(unsigned char) * filelen);
 						rewind(fileptr);
-						fread(buffer,filelen, sizeof(char),fileptr);
+						fread(buffer,filelen, sizeof(unsigned char),fileptr);
 						unsigned long current = 0;
 						printf("%s[%s00000000%s]%s ",HRED,reset,HRED,reset);
 						int last = filelen % 16;
@@ -204,12 +204,12 @@ int main(int argc, char *argv[])
 								{
 										printf("%s|%s",GRN,reset);
 										printf("%s%s%s",RED,start,reset);
-										memset((char*)start,'\0',17);
-										txtptr = (char*)start;
+										memset((unsigned char*)start,'\0',17);
+										txtptr = (unsigned char*)start;
 										current = current + 1;
 										counter = 0;
 										printf("\n%s[%s",HRED,reset);
-										char *offset = hget(current);
+										unsigned char *offset = hget(current);
 										for(int k = 0; k<7-strlen(offset);k++)
 												printf("0");
 										printf("%s0%s]%s ",offset,HRED,reset);
@@ -218,22 +218,22 @@ int main(int argc, char *argv[])
 								else if(counter == 8)
 										printf("%s|%s   ",GRN,reset);
 								printf("%s|%s",GRN,reset);
-								char *val = hget((unsigned long)*buffer);
+								unsigned char *val = hget((unsigned long)*buffer);
 								if(*buffer<16)
 										printf("%s0%s",BCYN,reset);
 								//printf("BUFFER_VALUE:%s",*buffer);
 								printf("%s%s%s",BCYN,val,reset);
-								if(*buffer < 255 && *buffer != 10)
+								if(*buffer < 127 && *buffer > 33)
 										*txtptr = *buffer;
 								else if(*buffer==10)
-										*txtptr = ' '; 
+										*txtptr = '.'; 
 								else
 										*txtptr = '.';
 						}
 						if(last != 0)
 						{
 								printf("%s|%s",GRN,reset);
-								if(last < 8)
+								if(last <= 8)
 										printf("    ");
 								int end = (16*3-1) - (last * 3);
 								for(int h = 0; h < end; h++)
