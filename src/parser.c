@@ -21,6 +21,7 @@ struct parse_res parse_args(char **msg,const int a_count)
     result.vertical=false;
     struct parse_res *n = &result;
     result.file = false;
+		result.f_readlen = 0;
     result.state = FAILURE;
     result.val_conv.conv = EMP;
     int i,j,index;
