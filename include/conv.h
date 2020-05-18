@@ -16,7 +16,9 @@
 #define HELP    0xB877887   //--h
 #define VAL     0x597088    //-v
 #define FIL     0x597078    //-f
-#define VRT     0xB877895   //--v 
+#define VRT     0xB877895   //--v
+#define OV      0x17C768AC4 //--ov
+#define CD      0x17C768927 //--cd
 enum conv
 {
     CONV_VAL,
@@ -75,6 +77,7 @@ struct value_conv
         char *val;
         unsigned long d_val;
     };
+    char *originalvalue;
 };
 
 struct parse_res
@@ -90,11 +93,14 @@ struct parse_res
     enum parse_state state;
     bool file;
     bool vertical;
+    bool originalvalues;
+    bool customdelimiter;
     union 
     {
         struct file_conv f_conv;
         struct value_conv val_conv;
     };
+    char *cstdel;
 };
 
 #endif

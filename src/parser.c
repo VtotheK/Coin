@@ -21,9 +21,11 @@ struct parse_res parse_args(char **msg,const int a_count)
     result.vertical=false;
     struct parse_res *n = &result;
     result.file = false;
+    result.customdelimiter = false;
     result.f_readlen = 0;
     result.state = FAILURE;
     result.val_conv.conv = EMP;
+    result.originalvalues = false;
     int i,j,index;
     unsigned long target,temptarget;
     struct targets *ntarget = result.targets;
@@ -165,8 +167,30 @@ struct parse_res parse_args(char **msg,const int a_count)
                     ntarget = addtarget(ntarget,temptarget);
                 }
             }
+            else if(!result.file && strcmp(&msg[i][0],"--ov") == 0)
             {
-
+              result.originalvalues = true;
+              result.targetlen++;
+              ntarget = addtarget(ntarget,temptarget);
+            }
+            else if(!result.file && strlen(&msg[i][0]) > 4 && msg[i][0] == '-'
+                    && msg[i][1] == '-' && msg[i][2] == 'c' && msg[i][3] == 'd')
+            {
+              int arglen = strlen(&msg[i][0]) - 4;
+              result.cstdel = (char*) malloc(sizeof(char) * arglen + 1);
+              if(result.cstdel == NULL)
+              {
+                  printf("Could not allocate memory");
+                  exit(EXIT_FAILURE);
+              }
+              else
+              {
+                  memset(result.cstdel, '\0', arglen + 1);
+                  strcpy(result.cstdel, &msg[i][4]);
+              }
+              result.customdelimiter = true;
+              result.targetlen++;
+              ntarget = addtarget(ntarget,temptarget);
             }
             //TODO handle --commands stack --commands to ntarget struct pointer
         }
@@ -233,6 +257,13 @@ struct parse_res parse_args(char **msg,const int a_count)
                     n->val_conv.val = hret(&msg[j][0]);
                 else
                     n->msg = "Invalid input";
+                if(result.originalvalues)
+                {
+                    int valuelength = strlen(&msg[j][0]);
+                    n->val_conv.originalvalue = (char*) malloc(sizeof(char) * valuelength + 1);
+                    memset(n->val_conv.originalvalue, '\0', valuelength + 1);
+                    strcpy(n->val_conv.originalvalue, &msg[j][0]);
+                }
                 n->next = (struct parse_res*) malloc(sizeof(struct parse_res));
                 n->next->val_conv.conv = n->val_conv.conv; 
                 n = n->next;

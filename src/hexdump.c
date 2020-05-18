@@ -67,6 +67,14 @@ int main(int argc, char *argv[])
                         }
                         if(n->val_conv.conv == CONV_HTOD)
                         {
+                            if(result.originalvalues)
+                            {
+                                printf("%s",n->val_conv.originalvalue);
+                                if(result.customdelimiter)
+                                  printf("%s",result.cstdel);
+                                else
+                                  printf("=");
+                            }
                             printf("%lu ",res);
                             if(result.vertical)
                                 printf("\n");
