@@ -150,6 +150,14 @@ int main(int argc, char *argv[])
             }
             else if(n->state == FAILURE)
             {
+                if(result.originalvalues)
+                {
+                  printf("%s",n->val_conv.originalvalue);
+                  if(result.customdelimiter)
+                      printf("%s",result.cstdel);
+                  else
+                      printf("=");
+                }
                 printf("%s",n->msg);
                 if(result.vertical)
                     printf("\n");
