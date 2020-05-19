@@ -9,8 +9,11 @@
 #include "../include/hparse.h"
 #include "../include/dparse.h"
 #include "../include/parser.h"
+
 bool istarget(unsigned long,struct parse_res, size_t);
+void addoriginalvalue(char *, struct parse_res*);
 struct targets* addtarget(struct targets*,unsigned long);
+
 struct parse_res parse_args(char **msg,const int a_count)
 {
     struct parse_res result;
@@ -54,57 +57,39 @@ struct parse_res parse_args(char **msg,const int a_count)
                     break;
                 case HTOD:
                     if(!result.file&& result.val_conv.conv == EMP)
-                    {
                         result.val_conv.conv = CONV_HTOD;
-                    }
                     break;
                 case HTOB:
                     if(!result.file && result.val_conv.conv == EMP)
-                    {
                         result.val_conv.conv = CONV_HTOB;
-                    }
                     break;
                 case HTOA:
                     if(!result.file && result.val_conv.conv == EMP)
-                    {
                         result.val_conv.conv = CONV_HTOA;
-                    }
                     break;
                 case BTOH:
                     if(!result.file && result.val_conv.conv == EMP)
-                    {
                         result.val_conv.conv = CONV_BTOH;
-                    }
                     break;
                 case BTOD:
                     if(!result.file && result.val_conv.conv == EMP)
-                    {
                         result.val_conv.conv = CONV_BTOD;
-                    }
                     break;
                 case BTOA:
                     if(!result.file && result.val_conv.conv == EMP)
-                    {
                         result.val_conv.conv = CONV_BTOA;
-                    }
                     break;
                 case DTOH:
                     if(!result.file && result.val_conv.conv == EMP)
-                    {
                         result.val_conv.conv = CONV_DTOH;
-                    }
                     break;
                 case DTOB:
                     if(!result.file && result.val_conv.conv == EMP)
-                    {
                         result.val_conv.conv = CONV_DTOB;
-                    }
                     break;
                 case DTOA:
                     if(!result.file && result.val_conv.conv == EMP)
-                    {
                         result.val_conv.conv = CONV_DTOA;
-                    }
                     break;
             }
             if((result.val_conv.conv != EMP || result.file) && !u_conv)
@@ -169,33 +154,37 @@ struct parse_res parse_args(char **msg,const int a_count)
             }
             else if(!result.file && strcmp(&msg[i][0],"--ov") == 0)
             {
-              result.originalvalues = true;
-              result.targetlen++;
-              ntarget = addtarget(ntarget,temptarget);
+                result.originalvalues = true;
+                result.targetlen++;
+                ntarget = addtarget(ntarget,temptarget);
             }
             else if(!result.file && strlen(&msg[i][0]) > 4 && msg[i][0] == '-'
                     && msg[i][1] == '-' && msg[i][2] == 'c' && msg[i][3] == 'd')
             {
-              int arglen = strlen(&msg[i][0]) - 4;
-              result.cstdel = (char*) malloc(sizeof(char) * arglen + 1);
-              if(result.cstdel == NULL)
-              {
-                  printf("Could not allocate memory");
-                  exit(EXIT_FAILURE);
-              }
-              else
-              {
-                  memset(result.cstdel, '\0', arglen + 1);
-                  strcpy(result.cstdel, &msg[i][4]);
-              }
-              result.customdelimiter = true;
-              result.targetlen++;
-              ntarget = addtarget(ntarget,temptarget);
+                int arglen = strlen(&msg[i][0]) - 4;
+                result.cstdel = (char*) malloc(sizeof(char) * arglen + 1);
+                if(result.cstdel == NULL)
+                {
+                    printf("Could not allocate memory");
+                    exit(EXIT_FAILURE);
+                }
+                else
+                {
+                    memset(result.cstdel, '\0', arglen + 1);
+                    strcpy(result.cstdel, &msg[i][4]);
+                }
+                result.customdelimiter = true;
+                result.targetlen++;
+                ntarget = addtarget(ntarget,temptarget);
             }
             //TODO handle --commands stack --commands to ntarget struct pointer
         }
     }
-
+    if(!result.file && result.targetlen >= a_count)
+    {
+        printf("No value arguments.\n");
+        exit(EXIT_FAILURE);
+    }
     if((result.val_conv.conv != EMP && !result.file) || result.file)
     {
         result.state = SUCCESS;
@@ -223,7 +212,6 @@ struct parse_res parse_args(char **msg,const int a_count)
                 return result;
             }
         }
-
     }     
     else if(result.val_conv.val != EMP && result.state == SUCCESS)
     {
@@ -243,6 +231,8 @@ struct parse_res parse_args(char **msg,const int a_count)
                     n->val_conv.val = hret(&msg[j][0]);
                 else
                     n->msg = "Invalid input";
+                if(result.originalvalues)
+                    addoriginalvalue(&msg[j][0],n);
                 n->next = (struct parse_res*)malloc(sizeof(struct parse_res));
                 n->next->val_conv.conv = n->val_conv.conv;
                 n = n->next;
@@ -258,20 +248,15 @@ struct parse_res parse_args(char **msg,const int a_count)
                 else
                     n->msg = "Invalid input";
                 if(result.originalvalues)
-                {
-                    int valuelength = strlen(&msg[j][0]);
-                    n->val_conv.originalvalue = (char*) malloc(sizeof(char) * valuelength + 1);
-                    memset(n->val_conv.originalvalue, '\0', valuelength + 1);
-                    strcpy(n->val_conv.originalvalue, &msg[j][0]);
-                }
+                    addoriginalvalue(&msg[j][0],n);
                 n->next = (struct parse_res*) malloc(sizeof(struct parse_res));
                 n->next->val_conv.conv = n->val_conv.conv; 
                 n = n->next;
                 break;
 
                 case CONV_HTOA:
-                //TODO Decide if to use UTF-8 or just ASCII encoding 
-                break; //TODO
+                //TODO  
+                break; 
 
                 case CONV_DTOH:
                 n->state = dlen(&msg[j][0],strlen(&msg[j][0]));
@@ -279,6 +264,8 @@ struct parse_res parse_args(char **msg,const int a_count)
                 {
                     n->msg = "Invalid input";
                 }
+                if(result.originalvalues)
+                    addoriginalvalue(&msg[j][0],n);
                 n->val_conv.d_val = dval(&msg[j][0]);
                 n->next = (struct parse_res*) malloc(sizeof(struct parse_res));
                 n->next->val_conv.conv = n->val_conv.conv;
@@ -291,6 +278,8 @@ struct parse_res parse_args(char **msg,const int a_count)
                 {
                     n->msg = "Invalid input";
                 }
+                if(result.originalvalues)
+                    addoriginalvalue(&msg[j][0],n);
                 n->val_conv.d_val = dval(&msg[j][0]);
                 n->next = (struct parse_res*) malloc(sizeof(struct parse_res));
                 n->next->val_conv.conv = n->val_conv.conv;
@@ -298,11 +287,12 @@ struct parse_res parse_args(char **msg,const int a_count)
                 break;
 
                 case CONV_DTOA:
-                //TODO Decide if to use UTF-8 or just ASCII encoding 
+                //TODO  
                 break;
 
                 case CONV_BTOA:
-                //TODO Decide if to use UTF-8 or just ASCII encoding 
+                //TODO 
+                break;
                 case CONV_BTOH:
                 case CONV_BTOD:
                 ;
@@ -324,6 +314,8 @@ struct parse_res parse_args(char **msg,const int a_count)
                     if(n->state == SUCCESS)
                         n->val_conv.val = hret(&msg[j][0]);
                 }
+                if(result.originalvalues)
+                    addoriginalvalue(&msg[j][0],n);
                 n->next = (struct parse_res*) malloc(sizeof(struct parse_res));
                 n->next->val_conv.conv = n->val_conv.conv;
                 n = n->next;
@@ -384,3 +376,11 @@ struct targets* addtarget(struct targets* targets, unsigned long val)
     targets = targets->next;
     return targets;
 }
+
+void addoriginalvalue(char *arg, struct parse_res *n)
+{
+    int valuelength = strlen(arg);
+    n->val_conv.originalvalue = (char*) malloc(sizeof(char) * valuelength + 1);
+    memset(n->val_conv.originalvalue, '\0', valuelength + 1);
+    strcpy(n->val_conv.originalvalue, arg);
+ }
