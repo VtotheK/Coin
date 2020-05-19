@@ -13,13 +13,11 @@ DEPS = $(patsubst %,$(IDIR)/%,$(_DEPS))
 _OBJ = fileprint.o bparse.o dparse.o hparse.o hget.o bprint.o parser.o hexdump.o valueprint.o
 OBJ = $(patsubst %,$(ODIR)/%,$(_OBJ))
 
-
 $(ODIR)/%.o: %.c $(DEPS)
 	$(CC) -c -o $@ $< $(CFLAGS)
 
-hexdump: $(OBJ)
+hxd: $(OBJ)
 	$(CC) -o $@ $^ $(CFLAGS) $(LIBS)  
-
 
 .PHONY: clean
 
