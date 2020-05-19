@@ -122,8 +122,7 @@ struct parse_res parse_args(char **msg,const int a_count)
             }
             else if(temptarget == HELP)
             {
-                result.msg = "Some helper message";
-                result.state == HELPER;
+                result.state = HELPER;
                 return result;
             }
             else if(result.file && strlen(&msg[i][0]) > 3 && msg[i][0] == '-'
@@ -191,7 +190,7 @@ struct parse_res parse_args(char **msg,const int a_count)
     }
     else if(result.state == FAILURE)
     {
-        result.msg = "No conversion type. Type -h to see all commands.";
+        result.msg = "No conversion type. Type --h to see all commands.";
         return result;
     }
     if(result.file) 
