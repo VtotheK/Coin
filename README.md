@@ -24,4 +24,4 @@ Write the following command to see the list of available commands
 ```
 
 ### Youtube demo
-https://www.youtube.com/watch?v=-IPx8CzpF5A&t=4s
+https://www.youtube.com/watch?v=-IPx8CzpF5A&
