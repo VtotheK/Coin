@@ -29,12 +29,12 @@ int main(int argc, char *argv[])
         if(n->state == HELPER)
         {
             printf("=========================================================================\n");
-            printf("|         HXD is a light value converter / file hexdump program         |\n");
-            printf("|                    https://github.com/VtotheK/HXD.                    |\n");
+            printf("|         Coin is a light value converter / file hexdump program        |\n");
+            printf("|                    https://github.com/VtotheK/Coin.                   |\n");
             printf("|                                                                       |\n");
-            printf("|./hxd [-dh|-db|-hd|-hb|-bd|-bh] [--ov] [--cd<value>] [--v] <values>    |\n");
-            printf("|./hxd [-f] [--l<value>] <filepath>                                     |\n");
-            printf("|./hxd [--h]                                                            |\n");
+            printf("|./coin [-dh|-db|-hd|-hb|-bd|-bh] [--ov] [--cd<value>] [--v] <values>   |\n");
+            printf("|./coin [-f] [--l<value>] <filepath>                                    |\n");
+            printf("|./coin [--h]                                                           |\n");
             printf("|Value converting:                                                      |\n");
             printf("|--ov original values                                                   |\n");
             printf("|--v  vertical printing                                                 |\n");
