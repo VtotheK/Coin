@@ -16,7 +16,7 @@ OBJ = $(patsubst %,$(ODIR)/%,$(_OBJ))
 $(ODIR)/%.o: %.c $(DEPS)
 	$(CC) -c -o $@ $< $(CFLAGS)
 
-hxd: $(OBJ)
+coin: $(OBJ)
 	$(CC) -o $@ $^ $(CFLAGS) $(LIBS)  
 
 .PHONY: clean
