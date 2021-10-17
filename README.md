@@ -76,6 +76,9 @@ You can print colored file hexadump into console
 
 ![Coin hexdump](/coin_file.png)
 
+You can also limit the amout of outputted bytes.
+
+![Coin hexdump bytes limited](/coin_file_limited.png)
 
 ### Youtube demo
 https://www.youtube.com/watch?v=-IPx8CzpF5A&
