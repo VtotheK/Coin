@@ -72,11 +72,11 @@ FFA::4090
 
 ### File hexdump 
 
-You can print colored file hexadump into console   
+You can print colored file hexdump into console with `-f` flag.   
 
 ![Coin hexdump](/coin_file.png)
 
-You can also limit the amout of outputted bytes.
+You can also limit the amout of outputted bytes with `--l` flag.
 
 ![Coin hexdump bytes limited](/coin_file_limited.png)
 
