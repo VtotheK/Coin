@@ -74,7 +74,7 @@ FFA::4090
 
 You can print colored file hexadump into console   
 
-![Coin hexdump](https://freeimage.host/i/5BShAu)
+![Coin hexdump](/coin_file.png)
 
 
 ### Youtube demo
