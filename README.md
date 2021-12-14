@@ -40,7 +40,7 @@ Binary conversion
 vtothek@ubuntu ~ $ coin -hb 9F 800A FFA
 10011111 1000000000001010 111111111010 
 ```
-Invalid imput example 
+Invalid input example 
 ``` bash
 vtothek@ubuntu ~ $ coin -hb 9F 800A FFA 9G
 10011111 1000000000001010 111111111010 Invalid input 
